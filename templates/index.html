@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask & Plotly</title>
+</head>
+<body>
+    <h1>Upload a DOCX File</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="docx_file" accept=".docx" required>
+        <button type="submit">Upload and Visualize</button>
+    </form>
+
+    {% if plot_div %}
+    <h2>Visualization</h2>
+    <div>{{ plot_div|safe }}</div>
+    {% endif %}
+</body>
+</html>

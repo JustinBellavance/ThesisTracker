@@ -1,0 +1,6 @@
+uv.lock
+.env
+.venv
+
+uploads_data.csv
+
