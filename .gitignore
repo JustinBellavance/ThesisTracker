@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Environment variables
+.env
+
+# Django stuff:
+db.sqlite3
+thesistrackerdjango/
+*.pot
+*.log
+
+# Local development environment
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Virtual environments
+venv/
+
+# Static files
+/staticfiles/
+/media/
+
+# Migrations
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.log
+*/migrations/*.sqlite3
+*/migrations/[0-9][0-9]*.py
+
+# Node modules
+node_modules/
+
+# Other files to ignore
+.DS_Store
+*.bak
+*.orig
+*.rej
+*.sublime-workspace
+*.sublime-project
+*.tmp
+*.cache
