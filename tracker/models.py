@@ -7,4 +7,4 @@ class Thesis(models.Model):
     word_change = models.IntegerField()
     
     def __str__(self):
-        return (f"{self.name} changed {self.word_change} words at {self.date}")
+        return (f"{self.name} changed {self.word_change} words at {self.upload_date}")
