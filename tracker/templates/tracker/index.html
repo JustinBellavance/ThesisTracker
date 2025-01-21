@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contribution Calendar</title>
+</head>
+<body>
+    <h1>Upload your Thesis (.docx only!)</h1>
+    <form method="POST" action="/upload/" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="docx_file" accept=".docx" required>
+      <button type="submit">Upload</button>
+  </form>
+
+    <h2>Contribution Calendar</h2>
+    <div id="chart"></div>
+    <script>
+        // Parse the Plotly graph and config JSON
+        var graphData = {{ graph|safe }};
+        var graphConfig = {{ config|safe }};
+        
+        // Render the graph with the config
+        Plotly.newPlot('chart', graphData.data, graphData.layout, graphConfig);
+    </script>
+</body>
+</html>
