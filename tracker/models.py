@@ -3,6 +3,7 @@ from django.utils.timezone import now
 
 class Thesis(models.Model):
     name = models.CharField(max_length=200)
+    username = models.CharField(max_length=200)
     upload_date = models.DateTimeField(default=now)
     word_change = models.IntegerField()
     

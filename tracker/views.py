@@ -6,12 +6,13 @@ import plotly.graph_objs as go
 from docx import Document
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.decorators import login_required
 
 import os
 
 from .models import Thesis
 
-
+@login_required
 def upload_docx(request):
     if request.method == "POST" and request.FILES.get("docx_file"):
         uploaded_file = request.FILES["docx_file"]
@@ -30,10 +31,11 @@ def upload_docx(request):
             if previous_thesis:
                 word_diff = word_count - previous_thesis.word_change
             else:
-                word_diff = 0 
+                word_diff = word_count 
 
             Thesis.objects.create(
-                name=uploaded_file.name,
+                name = uploaded_file.name,
+                username=request.user.username,
                 word_change=word_diff,
             )
 
@@ -50,14 +52,14 @@ def upload_docx(request):
 
     return HttpResponse("No file uploaded.", status=400)
 
-def generate_heatmap_data():
+def generate_heatmap_data(username):
     today = datetime.now().date()
     start_date = today - timedelta(days=365)
     date_list = [start_date + timedelta(days=i) for i in range(366)]
 
     word_counts_by_date = {}
 
-    thesis_entries = Thesis.objects.all()
+    thesis_entries = Thesis.objects.filter(username=username)
 
     for thesis in thesis_entries:
         date_only = thesis.upload_date.date()
@@ -72,7 +74,13 @@ def generate_heatmap_data():
     return week_data, date_list
 
 def index(request):
-    week_data, date_list = generate_heatmap_data()
+    
+    if not request.user.username:
+        return render(request, "index.html")
+        
+    username=request.user.username
+
+    week_data, date_list = generate_heatmap_data(username)
 
     pconf = {
         "displayModeBar": False,  
