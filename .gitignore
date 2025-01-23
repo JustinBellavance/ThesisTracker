@@ -48,3 +48,5 @@ node_modules/
 *.sublime-project
 *.tmp
 *.cache
+
+client_secret_*
