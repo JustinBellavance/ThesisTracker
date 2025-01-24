@@ -90,15 +90,19 @@ def index(request):
         data=go.Heatmap(
             z=week_data,
             colorscale="Blues",
-            xgap=4,
-            ygap=4,
+            xgap=2,
+            ygap=2,
             x=[date.strftime("%b %d") for date in date_list[:53]],  
             y=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],  
         )
     )
     fig.update_layout(
         xaxis={"visible": False, "showticklabels": False},  
-        margin={'t':0, 'b':0},
+        margin={'t': 0, 'b': 0, 'l' : 100, 'r' : 100}, 
+        yaxis={
+                "scaleanchor": "x",
+                "autorange": "reversed",
+              },
     )
 
     fig.update_traces(showscale=False)  
@@ -110,3 +114,9 @@ def index(request):
     }
     
     return render(request, "index.html", context)
+
+def login(request):
+    return render(request, "account/login.html")
+
+def signup(request):
+    return render(request, "account/signup.html")
