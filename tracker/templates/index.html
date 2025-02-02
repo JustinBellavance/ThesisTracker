@@ -11,52 +11,116 @@
     <title>Contribution Calendar</title>
 </head>
 <body >
-    <h1>Upload your Thesis (.docx only!)</h1>
-    <form method="POST" action="/upload/" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="file" name="docx_file" accept=".docx" required>
-      <button type="submit">Upload</button>
-  </form>
+    <div id="calendars">
+        <h1>Upload your Thesis (.docx only!)</h1>
+        <form method="POST" action="/upload/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="docx_file" accept=".docx" required>
+        <button type="submit">Upload</button>
+    </form>
 
-  {% if user.is_authenticated %}
-        <p>You are logged in as {{ user.username }}.</p>
-        <a href="{% url 'account_logout' %}">Logout</a>
-    {% else %}
-        <h2>Sign In</h2>
-        <form method="post" action="{% url 'account_login' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Log In</button>
-        </form>
+    {% if user.is_authenticated %}
+            <p>You are logged in as {{ user.username }}.</p>
+            <a href="{% url 'account_logout' %}">Logout</a>
+        {% else %}
+            <h2>Sign In</h2>
+            <form method="post" action="{% url 'account_login' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Log In</button>
+            </form>
 
-        <hr>
+            <hr>
 
-        <h2>Sign Up</h2>
-        <form method="post" action="{% url 'account_signup' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Sign Up</button>
-        </form>
+            <h2>Sign Up</h2>
+            <form method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Sign Up</button>
+            </form>
 
-        <hr>
+            <hr>
 
-        <p>Or sign in with:</p>
-        {% load socialaccount %}
-        <a href="{% provider_login_url 'google' %}?next=/">Login with Google</a>
-    {% endif %}
+            <p>Or sign in with:</p>
+            {% load socialaccount %}
+            <a href="{% provider_login_url 'google' %}?next=/">Login with Google</a>
+        {% endif %}
 
-    <div style="height:60%">
-        <h2>Contribution Calendar</h2>
-        <div id="chart" style="height:1em;"></div>
-        <script>
-            // Parse the Plotly graph and config JSON
-            var graphData = JSON.parse('{{ graph|escapejs }}');
-            var graphConfig = JSON.parse('{{ config|escapejs }}');
+        <div id="user-calendars" style="height:200px">
+            <h2 style="height:10%;">Your Contribution Calendar</h2>
+            <div id="chart" style="height:90%;"></div>
+            <script>
+                // Parse the Plotly graph and config JSON
+                var graphData = JSON.parse('{{ graph|escapejs }}');
+                var graphConfig = JSON.parse('{{ config|escapejs }}');
+            
+                // Render the graph with the config
+                Plotly.newPlot('chart', graphData.data, graphData.layout, graphConfig);
+            </script>
+        </div>
+
+        <h2 style="height: 10%; margin-top: 50px;">Other Users Contribution Calendars</h2>
+        <div id="calendar-container" style="display: flex; flex-wrap: wrap; justify-content: space-around;"></div>
         
-            // Render the graph with the config
-            Plotly.newPlot('chart', graphData.data, graphData.layout, graphConfig);
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let offset = 0;
+            let loading = false;
+        
+            function loadMoreCalendars() {
+                if (loading) return;
+                loading = true;
+        
+                fetch(`/load-contribution-calendars?offset=${offset}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.calendars.forEach(calendar => {
+                            // Create a new calendar container
+                            const calendarDiv = document.createElement("div");
+                            calendarDiv.classList.add("calendar-item");
+                            calendarDiv.style.marginBottom = "30px";
+                            calendarDiv.style.flex = "1 1 300px";  // Ensures it doesn't grow too large and wraps on smaller screens
+                            calendarDiv.style.height = "300px"; // Set explicit height for the calendar container
+        
+                            // Add user label
+                            const userLabel = document.createElement("h3");
+                            userLabel.textContent = calendar.username;
+                            calendarDiv.appendChild(userLabel);
+        
+                            // Create a new chart div
+                            const chartDiv = document.createElement("div");
+                            chartDiv.id = `chart-${offset}`;
+                            chartDiv.style.height = "80%";  // Set the chart's height to fit within the calendar div
+                            chartDiv.style.width = "95%";  // Ensures the chart takes up full width
+                            calendarDiv.appendChild(chartDiv);
+        
+                            // Append the new calendar to the container
+                            document.getElementById("calendar-container").appendChild(calendarDiv);
+        
+                            // Render the graph
+                            const graphData = JSON.parse(calendar.graph);
+                            Plotly.newPlot(chartDiv.id, graphData.data, graphData.layout, { displayModeBar: false });
+        
+                            offset++;  // Increment offset
+                        });
+        
+                        loading = false;
+                    });
+            }
+        
+            // Load initial calendars
+            loadMoreCalendars();
+        
+            // Detect scroll event for infinite loading
+            document.getElementById("calendars").addEventListener("scroll", function () {
+                if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+                    loadMoreCalendars();
+                }
+            });
+        });
         </script>
     </div>
+    
 
 </body>
 </html>

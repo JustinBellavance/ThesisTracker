@@ -1,12 +1,15 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.files.storage import default_storage
 from datetime import datetime, timedelta
+from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib.auth.decorators import login_required
+from django.core.serializers.json import DjangoJSONEncoder
+
 import plotly.graph_objs as go
 from docx import Document
 import json
-from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.auth.decorators import login_required
+
 
 import os
 
@@ -52,67 +55,120 @@ def upload_docx(request):
 
     return HttpResponse("No file uploaded.", status=400)
 
+def load_contribution_calendars(request):
+    """ Returns a batch of contribution calendars """
+    offset = int(request.GET.get("offset", 0))  # Get current batch index
+    limit = 5  # Load 5 calendars at a time
+
+    users = Thesis.objects.values_list("username", flat=True).distinct()[offset:offset + limit]
+    
+    print(users)
+    calendars = []
+
+    for user in users:
+        heatmap_data, date_list, tooltip_text = generate_heatmap_data(user)
+
+        week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
+        day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+        fig = go.Figure(
+            data=go.Heatmap(
+                z=heatmap_data,
+                colorscale=[
+                    [0.0, "#DDDDDD"],  
+                    [0.01, "#D6EAF8"],  
+                    [0.5, "#5DADE2"],  
+                    [1.0, "#154360"]  
+                ],
+                zmin=0,
+                zmax=max(max(row) for row in heatmap_data) or 1,
+                x=week_labels,
+                y=day_labels,
+                xgap=2,
+                ygap=2,
+                text=tooltip_text,
+                hoverinfo="text"
+            )
+        )
+
+        fig.update_layout(
+            xaxis={"visible": False, "showticklabels": False},  
+            margin={'t': 20, 'b': 0, 'l': 50, 'r': 50},
+            yaxis={"autorange": "reversed"}
+        )
+        fig.update_traces(showscale=False)
+
+        calendars.append({
+            "username": user,
+            "graph": json.dumps(fig.to_dict(), cls=DjangoJSONEncoder)
+        })
+
+    return JsonResponse({"calendars": calendars})
+
+
 def generate_heatmap_data(username):
     today = datetime.now().date()
-    start_date = today - timedelta(days=365)
-    date_list = [start_date + timedelta(days=i) for i in range(366)]
+    start_date = today - timedelta(days=364)
 
-    word_counts_by_date = {}
+    date_list = [start_date + timedelta(days=i) for i in range(365)]
+    word_counts_by_date = {thesis.upload_date.date(): thesis.word_change 
+                           for thesis in Thesis.objects.filter(username=username)}
 
-    thesis_entries = Thesis.objects.filter(username=username)
+    heatmap_data = [[0] * 53 for _ in range(7)]
+    tooltip_text = [[""] * 53 for _ in range(7)]  # Tooltip text array
 
-    for thesis in thesis_entries:
-        date_only = thesis.upload_date.date()
-        word_counts_by_date[str(date_only)] = thesis.word_change
-
-    week_data = [[] for _ in range(7)]  
     for date in date_list:
-        weekday = date.weekday() 
-        value = word_counts_by_date.get(str(date), 0)  
-        week_data[weekday].append(value)
+        week_num = (date - start_date).days // 7
+        day_of_week = date.weekday()
+        word_count = word_counts_by_date.get(date, 0)
 
-    return week_data, date_list
+        heatmap_data[day_of_week][week_num] = word_count
+        tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d')}: {word_count} words"
+
+    return heatmap_data, date_list, tooltip_text
 
 def index(request):
-    
     if not request.user.username:
         return render(request, "index.html")
-        
-    username=request.user.username
 
-    week_data, date_list = generate_heatmap_data(username)
+    username = request.user.username
+    heatmap_data, date_list, tooltip_text = generate_heatmap_data(username)
 
-    pconf = {
-        "displayModeBar": False,  
-    }
+    week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
+    day_labels = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
 
     fig = go.Figure(
         data=go.Heatmap(
-            z=week_data,
-            colorscale="Blues",
+            z=heatmap_data,
+            colorscale=[  # Custom color scale
+                [0, "#DDDDDD"],  # Light grey for 0 values
+                [0.1, "#D6EAF8"],  
+                [0.5, "#5DADE2"],  
+                [1, "#154360"]  # Dark blue for high values
+            ],
+            zmin=0,
+            x=week_labels,
+            y=day_labels,
             xgap=2,
             ygap=2,
-            x=[date.strftime("%b %d") for date in date_list[:53]],  
-            y=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],  
+            text=tooltip_text,  # Assign custom tooltip text
+            hoverinfo="text"  # Ensure only text is shown on hover
         )
     )
+
     fig.update_layout(
         xaxis={"visible": False, "showticklabels": False},  
-        margin={'t': 0, 'b': 0, 'l' : 100, 'r' : 100}, 
-        yaxis={
-                "scaleanchor": "x",
-                "autorange": "reversed",
-              },
+        margin={'t': 0, 'b': 0, 'l': 50, 'r': 50},
+        yaxis={"autorange": "reversed"}
     )
 
-    fig.update_traces(showscale=False)  
-    graph = fig.to_dict()
-    
+    fig.update_traces(showscale=False)
+
     context = {
-        "graph": json.dumps(graph, cls=DjangoJSONEncoder),
-        "config": json.dumps(pconf, cls=DjangoJSONEncoder),
+        "graph": json.dumps(fig.to_dict(), cls=DjangoJSONEncoder),
+        "config": json.dumps({"displayModeBar": False}, cls=DjangoJSONEncoder),
     }
-    
+
     return render(request, "index.html", context)
 
 def login(request):
