@@ -1,0 +1,9 @@
+html, body {
+    height: 100%;  /* Ensure both html and body take up the full height */
+    margin: 0;
+    margin-left:10px;     /* Remove default margin */
+}
+
+div { 
+    margin: 100px;
+}

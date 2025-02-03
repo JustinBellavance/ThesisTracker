@@ -1,126 +1,121 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     
-    <title>Contribution Calendar</title>
+    <title>ThesisTracker</title>
 </head>
-<body >
+<body>
+    <h1>ThesisTracker</h1>
+    
     <div id="calendars">
-        <h1>Upload your Thesis (.docx only!)</h1>
-        <form method="POST" action="/upload/" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="docx_file" accept=".docx" required>
-        <button type="submit">Upload</button>
-    </form>
-
-    {% if user.is_authenticated %}
-            <p>You are logged in as {{ user.username }}.</p>
-            <a href="{% url 'account_logout' %}">Logout</a>
-        {% else %}
-            <h2>Sign In</h2>
-            <form method="post" action="{% url 'account_login' %}">
+        <h2>Upload your Thesis (.docx only!)</h2>
+        <div>
+            <form method="POST" action="/upload/" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Log In</button>
+                <input type="file" name="docx_file" accept=".docx" required>
+                <button type="submit">Upload</button>
             </form>
+        </div>
 
-            <hr>
 
-            <h2>Sign Up</h2>
-            <form method="post" action="{% url 'account_signup' %}">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Sign Up</button>
-            </form>
+            <div class="auth-container">
+                {% if user.is_authenticated %}
+                <div>
+                    <p>You are logged in as {{ user.username }}.</p>
+                    <form action="{% url 'account_logout' %}?next=/" method="get">
+                        <button class="google-login" type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <form method="post" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Log In</button>
+                </form>
 
-            <hr>
+                <form method="post" action="{% url 'account_signup' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Sign Up</button>
+                </form>
 
-            <p>Or sign in with:</p>
-            {% load socialaccount %}
-            <a href="{% provider_login_url 'google' %}?next=/">Login with Google</a>
-        {% endif %}
+                {% load socialaccount %}
+                <form action="{% provider_login_url 'google' %}?next=/" method="get">
+                    <button class="google-login" type="submit">
+                        <img src="{% static 'google_logo.png' %}" alt="Google Logo">
+                        Login with Google
+                    </button>
+                </form>
+                {% endif %} 
+            </div>
 
-        <div id="user-calendars" style="height:200px">
-            <h2 style="height:10%;">Your Contribution Calendar</h2>
-            <div id="chart" style="height:90%;"></div>
+
+        {% if user.is_authenticated %}
+        <div id="user-calendar">
+            <h2>Your Contribution Calendar</h2>
+            <div id="chart"></div>
             <script>
-                // Parse the Plotly graph and config JSON
                 var graphData = JSON.parse('{{ graph|escapejs }}');
                 var graphConfig = JSON.parse('{{ config|escapejs }}');
-            
-                // Render the graph with the config
                 Plotly.newPlot('chart', graphData.data, graphData.layout, graphConfig);
             </script>
         </div>
+        {% endif %}
 
-        <h2 style="height: 10%; margin-top: 50px;">Other Users Contribution Calendars</h2>
-        <div id="calendar-container" style="display: flex; flex-wrap: wrap; justify-content: space-around;"></div>
-        
-        <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let offset = 0;
-            let loading = false;
-        
-            function loadMoreCalendars() {
-                if (loading) return;
-                loading = true;
-        
-                fetch(`/load-contribution-calendars?offset=${offset}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.calendars.forEach(calendar => {
-                            // Create a new calendar container
-                            const calendarDiv = document.createElement("div");
-                            calendarDiv.classList.add("calendar-item");
-                            calendarDiv.style.marginBottom = "30px";
-                            calendarDiv.style.flex = "1 1 300px";  // Ensures it doesn't grow too large and wraps on smaller screens
-                            calendarDiv.style.height = "300px"; // Set explicit height for the calendar container
-        
-                            // Add user label
-                            const userLabel = document.createElement("h3");
-                            userLabel.textContent = calendar.username;
-                            calendarDiv.appendChild(userLabel);
-        
-                            // Create a new chart div
-                            const chartDiv = document.createElement("div");
-                            chartDiv.id = `chart-${offset}`;
-                            chartDiv.style.height = "80%";  // Set the chart's height to fit within the calendar div
-                            chartDiv.style.width = "95%";  // Ensures the chart takes up full width
-                            calendarDiv.appendChild(chartDiv);
-        
-                            // Append the new calendar to the container
-                            document.getElementById("calendar-container").appendChild(calendarDiv);
-        
-                            // Render the graph
-                            const graphData = JSON.parse(calendar.graph);
-                            Plotly.newPlot(chartDiv.id, graphData.data, graphData.layout, { displayModeBar: false });
-        
-                            offset++;  // Increment offset
-                        });
-        
-                        loading = false;
-                    });
-            }
-        
-            // Load initial calendars
-            loadMoreCalendars();
-        
-            // Detect scroll event for infinite loading
-            document.getElementById("calendars").addEventListener("scroll", function () {
-                if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
-                    loadMoreCalendars();
-                }
-            });
-        });
-        </script>
+        <h2>Other Users' Contribution Calendars</h2>
+        <div id="calendar-container"></div>
     </div>
     
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let offset = 0;
+        let loading = false;
 
+        function loadMoreCalendars() {
+            if (loading) return;
+            loading = true;
+
+            fetch(`/load-contribution-calendars?offset=${offset}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.calendars.forEach(calendar => {
+                        const calendarDiv = document.createElement("div");
+                        calendarDiv.classList.add("calendar-item");
+                        
+                        const userLabel = document.createElement("h3");
+                        userLabel.textContent = calendar.username;
+                        calendarDiv.appendChild(userLabel);
+
+                        const chartDiv = document.createElement("div");
+                        chartDiv.id = `chart-${offset}`;
+                        calendarDiv.appendChild(chartDiv);
+
+                        document.getElementById("calendar-container").appendChild(calendarDiv);
+
+                        const graphData = JSON.parse(calendar.graph);
+                        Plotly.newPlot(chartDiv.id, graphData.data, graphData.layout, { displayModeBar: false });
+
+                        offset++;
+                    });
+                    loading = false;
+                });
+        }
+
+        loadMoreCalendars();
+        document.getElementById("calendars").addEventListener("scroll", function () {
+            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
+                loadMoreCalendars();
+            }
+        });
+    });
+    </script>
 </body>
 </html>
