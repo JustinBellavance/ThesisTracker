@@ -59,10 +59,19 @@ def load_contribution_calendars(request):
     """ Returns a batch of contribution calendars """
     offset = int(request.GET.get("offset", 0))  # Get current batch index
     limit = 5  # Load 5 calendars at a time
-
-    users = Thesis.objects.values_list("username", flat=True).distinct()[offset:offset + limit]
     
-    print(users)
+    username = request.user.username if request.user.is_authenticated else None
+
+    # Get all distinct usernames (excluding the logged-in user if authenticated)
+    users = Thesis.objects.values_list("username", flat=True).distinct()
+
+    # Exclude the logged-in user's username if they are authenticated
+    if username:
+        users = users.exclude(username=username)
+
+    # Slice the list for pagination
+    users = users[offset:offset + limit]
+    
     calendars = []
 
     for user in users:

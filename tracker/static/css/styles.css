@@ -12,6 +12,7 @@ body {
     color: #333;
     padding: 20px;
     line-height: 1.6;
+    overflow-y: auto;
 }
 
 /* Title styling */
@@ -102,6 +103,7 @@ hr {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-top: 30px;
+    max-height : 10%;
 }
 
 #user-calendar h2 {
@@ -110,6 +112,7 @@ hr {
     margin-bottom: 20px;
     text-align: center;
     font-family: 'Times New Roman', serif;
+    width : 100%;
 }
 
 /* Style for the contribution calendars section */
@@ -142,8 +145,8 @@ hr {
 
 /* Scrollable section styling */
 #calendars {
-    max-height: 80vh;
-    overflow-y: auto;
+    max-height: unset;
+    overflow: visible;
 }
 
 /* Responsive design for smaller screens */
