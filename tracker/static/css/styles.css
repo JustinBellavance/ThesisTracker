@@ -3,119 +3,142 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Body styling */
 body {
-    font-family: 'Times New Roman', serif;
-    background-color: #f5f7f9;
-    color: #333;
+    background-color: #f8f9fb;
+    color: #222;
     padding: 20px;
     line-height: 1.6;
-    overflow-y: auto;
 }
 
 /* Title styling */
 h1 {
     text-align: center;
-    color: #2196F3; /* Blue color */
-    font-size: 3rem;
-    margin-bottom: 30px;
+    color: #007bff; /* Blue color */
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
-/* Form styling */
+/* General Form Styling */
 form {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    align-content : space-between;
-    margin-bottom: 30px;
-}
-
-/* Upload form container to align file input and button in a row */
-.upload-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     gap: 15px;
-    margin-bottom: 30px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-input[type="file"], button {
-    padding: 10px 20px;
-    font-size: 1rem;
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    border: 1px solid #ddd;
+    font-size: 1rem;
+    transition: border-color 0.3s;
 }
 
-/* Authentication container to align buttons in a row */
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Button styling */
+button {
+    display: inline-block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Centered form container */
+.upload-container,
 .auth-container {
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 15px;
-    margin: 20px 0;
+    margin-bottom: 30px;
 }
 
-.auth-container form,
-.auth-container button.google-login {
-    display: flex;
-    flex-direction: row;
-}
-
-/* Login with Google button styling */
+/* Google Login Button */
 button.google-login {
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
+    gap: 10px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+button.google-login:hover {
+    background: #f1f1f1;
 }
 
 button.google-login img {
     width: 20px;
     height: 20px;
-    margin-right: 10px;
 }
 
-/* Section for user authentication */
+/* Section Styling */
 h2 {
-    color: #333;
-    font-size: 1.5rem;
+    color: #222;
+    font-size: 1.8rem;
     margin-top: 30px;
     text-align: center;
-    font-family: 'Times New Roman', serif;
+    font-weight: 500;
 }
 
+/* Horizontal line */
 hr {
     width: 80%;
     margin: 20px auto;
-    border-color: #ddd;
+    border: none;
+    height: 2px;
+    background-color: #ddd;
 }
 
-/* User logged-in section */
+/* User Calendar */
 #user-calendar {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-top: 30px;
-    max-height : 10%;
 }
 
 #user-calendar h2 {
-    color: #2196F3; /* Blue color */
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    text-align: center;
-    font-family: 'Times New Roman', serif;
-    width : 100%;
+    color: #007bff;
+    font-size: 1.5rem;
 }
 
-/* Style for the contribution calendars section */
+/* Contribution Calendars */
 #calendar-container {
     display: block;
     margin-top: 50px;
@@ -125,31 +148,67 @@ hr {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
     margin: 10px auto;
     text-align: center;
     padding: 20px;
-    font-family: 'Times New Roman', serif;
 }
 
 .calendar-item h3 {
     font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #333;
+    color: #222;
 }
 
-#calendar-container .calendar-item > div {
-    height: 200px;
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
     width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Scrollable section styling */
-#calendars {
-    max-height: unset;
-    overflow: visible;
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 50%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
 }
 
-/* Responsive design for smaller screens */
+.close {
+    color: #aaa;
+    font-size: 24px;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+/* Messages */
+.error-message {
+    color: red;
+    font-weight: 500;
+}
+
+.success-message {
+    color: green;
+    font-weight: 500;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     body {
         padding: 10px;
@@ -163,17 +222,16 @@ hr {
         width: 100%;
     }
 
-    input[type="file"], button {
-        font-size: 0.9rem;
+    form {
+        width: 90%;
     }
 
-    button.google-login {
+    input,
+    button {
         font-size: 0.9rem;
-        padding: 10px 15px;
     }
 
     .auth-container {
         flex-direction: column;
-        gap: 10px;
     }
 }

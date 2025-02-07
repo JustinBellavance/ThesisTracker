@@ -7,6 +7,6 @@ from . import views
 urlpatterns = [
     path("", views.index, name="index"),
     path("upload/", views.upload_docx, name="upload_docx"),
-    path('accounts/', include('allauth.urls')),
+    path('account/', include('allauth.urls')),
     path('load-contribution-calendars', views.load_contribution_calendars, name='load_contribution_calendars'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,4 +1,241 @@
-html, body {
-    height: 100%;  /* Ensure both html and body take up the full height */
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: 'Times New Roman', serif;
+    background-color: #f5f7f9;
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+    overflow-y: auto;
+}
+
+/* Title styling */
+h1 {
+    text-align: center;
+    color: #2196F3; /* Blue color */
+    font-size: 3rem;
+    margin-bottom: 30px;
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-content : space-between;
+    margin-bottom: 30px;
+}
+
+/* Upload form container to align file input and button in a row */
+.upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+input[type="file"], button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* Authentication container to align buttons in a row */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.auth-container form,
+.auth-container button.google-login {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Login with Google button styling */
+button.google-login {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
+button.google-login img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* Section for user authentication */
+h2 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-top: 30px;
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+}
+
+hr {
+    width: 80%;
+    margin: 20px auto;
+    border-color: #ddd;
+}
+
+/* User logged-in section */
+#user-calendar {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    max-height : 10%;
+}
+
+#user-calendar h2 {
+    color: #2196F3; /* Blue color */
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+    width : 100%;
+}
+
+/* Style for the contribution calendars section */
+#calendar-container {
+    display: block;
+    margin-top: 50px;
+}
+
+.calendar-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: 10px auto;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Times New Roman', serif;
+}
+
+.calendar-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#calendar-container .calendar-item > div {
+    height: 200px;
+    width: 100%;
+}
+
+/* Scrollable section styling */
+#calendars {
+    max-height: unset;
+    overflow: visible;
+}
+
+.modal {
+    display: none;  /* Hidden by default */
+    position: fixed;
+    z-index: 1000;  /* Ensure it's on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content container */
+.modal-content {
+    background-color: #fefefe;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 50%;
+    max-width: 500px;  /* Maximum width */
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Close button styling */
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    transition: color 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Modal message styling */
+#modalMessage {
+    font-size: 18px;
     margin: 10px 0;
+}
+
+/* Error message styling */
+.error-message {
+    color: red;
+}
+
+/* Success message styling */
+.success-message {
+    color: green;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .calendar-item {
+        width: 100%;
+    }
+
+    input[type="file"], button {
+        font-size: 0.9rem;
+    }
+
+    button.google-login {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+
+    .auth-container {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

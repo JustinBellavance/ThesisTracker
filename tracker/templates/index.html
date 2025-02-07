@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     {% load static %}
     <link rel="icon" href="{% static 'notepad.png' %}"></link>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    
+    <script src="{% static 'js/main.js' %}"></script>
+
     <title>ThesisTracker</title>
 </head>
 <body>
@@ -16,14 +20,20 @@
     
     <div id="calendars">
         <h2>Upload your Thesis (.docx only!)</h2>
-        <div>
-            <form method="POST" action="/upload/" enctype="multipart/form-data">
-                {% csrf_token %}
-                <input type="file" name="docx_file" accept=".docx" required>
-                <button type="submit">Upload</button>
-            </form>
-        </div>
 
+        <form id="uploadForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="docx_file" accept=".docx" required>
+            <button id="uploadButton" data-upload-url="{% url 'upload_docx' %}">Upload</button>
+        </form>
+
+
+        <div class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p id="modalMessage"></p>
+            </div>
+        </div>
 
             <div class="auth-container">
                 {% if user.is_authenticated %}
@@ -76,47 +86,8 @@
     </div>
     
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let offset = 0;
-        let loading = false;
 
-        function loadMoreCalendars() {
-            if (loading) return;
-            loading = true;
-
-            fetch(`/load-contribution-calendars?offset=${offset}`)
-                .then(response => response.json())
-                .then(data => {
-                    data.calendars.forEach(calendar => {
-                        const calendarDiv = document.createElement("div");
-                        calendarDiv.classList.add("calendar-item");
-                        
-                        const userLabel = document.createElement("h3");
-                        userLabel.textContent = calendar.username;
-                        calendarDiv.appendChild(userLabel);
-
-                        const chartDiv = document.createElement("div");
-                        chartDiv.id = `chart-${offset}`;
-                        calendarDiv.appendChild(chartDiv);
-
-                        document.getElementById("calendar-container").appendChild(calendarDiv);
-
-                        const graphData = JSON.parse(calendar.graph);
-                        Plotly.newPlot(chartDiv.id, graphData.data, graphData.layout, { displayModeBar: false });
-
-                        offset++;
-                    });
-                    loading = false;
-                });
-        }
-
-        loadMoreCalendars();
-        document.getElementById("calendars").addEventListener("scroll", function () {
-            if (this.scrollTop + this.clientHeight >= this.scrollHeight - 50) {
-                loadMoreCalendars();
-            }
-        });
-    });
+        
     </script>
 </body>
 </html>

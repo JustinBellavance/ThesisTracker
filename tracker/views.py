@@ -15,13 +15,15 @@ import os
 
 from .models import Thesis
 
+from django.http import JsonResponse
+
 @login_required
 def upload_docx(request):
     if request.method == "POST" and request.FILES.get("docx_file"):
         uploaded_file = request.FILES["docx_file"]
 
         if not uploaded_file.name.endswith(".docx"):
-            return HttpResponse("Invalid file type. Please upload a .docx file.", status=400)
+            return JsonResponse({"error": "Invalid file type. Please upload a .docx file."}, status=400)
 
         temp_file_path = default_storage.save(uploaded_file.name, uploaded_file)
 
@@ -31,29 +33,27 @@ def upload_docx(request):
 
             previous_thesis = Thesis.objects.order_by('-upload_date').first()
 
-            if previous_thesis:
-                word_diff = word_count - previous_thesis.word_change
-            else:
-                word_diff = word_count 
+            word_diff = word_count - previous_thesis.word_change if previous_thesis else word_count
 
             Thesis.objects.create(
-                name = uploaded_file.name,
+                name=uploaded_file.name,
                 username=request.user.username,
                 word_change=word_diff,
             )
 
-            message = f"File uploaded successfully! Word count: {word_count}. Difference from previous upload: {word_diff} words."
+            message = f"File uploaded successfully! Word count: {word_count}. Difference: {word_diff} words."
+
+            return JsonResponse({"message": message})
 
         except Exception as e:
-            message = f"An error occurred while processing the file: {str(e)}"
+            return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
 
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
 
-        return HttpResponse(message)
+    return JsonResponse({"error": "No file uploaded."}, status=400)
 
-    return HttpResponse("No file uploaded.", status=400)
 
 def load_contribution_calendars(request):
     """ Returns a batch of contribution calendars """

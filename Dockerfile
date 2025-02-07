@@ -28,6 +28,5 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
 
-
 # Set the default command to run the Django development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
