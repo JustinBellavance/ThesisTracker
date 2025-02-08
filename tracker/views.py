@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.core.files.storage import default_storage
 from datetime import datetime, timedelta
@@ -6,6 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
 from django.core.serializers.json import DjangoJSONEncoder
 
+from .forms import CustomSignupForm
 import plotly.graph_objs as go
 from docx import Document
 import json
@@ -36,7 +37,6 @@ def upload_docx(request):
             word_diff = word_count - previous_thesis.word_change if previous_thesis else word_count
 
             Thesis.objects.create(
-                name=uploaded_file.name,
                 username=request.user.username,
                 word_change=word_diff,
             )
@@ -183,5 +183,16 @@ def index(request):
 def login(request):
     return render(request, "account/login.html")
 
-def signup(request):
-    return render(request, "account/signup.html")
+# def signup(request):
+#     return render(request, "account/signup.html")
+
+def signup_view(request):
+    if request.method == "POST":
+        form = CustomSignupForm(request.POST)
+        if form.is_valid():
+            form.save()  # Create the user
+            return redirect('login')  # Redirect to login page after signup
+    else:
+        form = CustomSignupForm()
+
+    return render(request, 'signup.html', {'form': form})

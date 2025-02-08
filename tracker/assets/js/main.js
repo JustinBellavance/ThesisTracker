@@ -1,4 +1,8 @@
 $(document).ready(function() {
+
+    $(".modal").hide();  // Ensure modal is hidden initially
+
+
     let offset = 0;
     let loading = false;
 
@@ -34,29 +38,28 @@ $(document).ready(function() {
         }
     });
 
-
-
     // Handle form submission
     $("#uploadForm").submit(function (event) {
-        event.preventDefault(); // Prevent the form from submitting normally
+        event.preventDefault(); 
 
-        var formData = new FormData(this); // Get the form data
+        var formData = new FormData(this);
+        var uploadUrl = $("#uploadButton").data("upload-url");  // Retrieve the URL from the data attribute
 
         $.ajax({
-            url: "{% url 'upload_docx' %}",  // URL for the view
+            url: uploadUrl,  // Use the URL from the data attribute
             method: "POST",
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
                 if (data.error) {
-                    showModal(data.error, 'error-message');  // Show modal with error
+                    showModal(data.error, true);
                 } else {
-                    showModal(data.message, 'success-message');  // Show modal with success message
+                    showModal(data.message);
                 }
             },
             error: function () {
-                showModal("An error occurred. Please try again.", 'error-message');  // Show modal if error occurs
+                showModal("An error occurred. Please try again.", true);
             }
         });
     });

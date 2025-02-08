@@ -1,237 +1,40 @@
-/* Reset default browser styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter', sans-serif;
+.b-example-divider {
+    height: 3rem;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
 }
 
-/* Body styling */
-body {
-    background-color: #f8f9fb;
-    color: #222;
-    padding: 20px;
-    line-height: 1.6;
-}
-
-/* Title styling */
-h1 {
-    text-align: center;
-    color: #007bff; /* Blue color */
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
-
-/* General Form Styling */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 400px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="file"],
-textarea,
-select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-/* Button styling */
-button {
-    display: inline-block;
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
+.form-control-dark {
     color: #fff;
-    cursor: pointer;
-    transition: background 0.3s;
+    background-color: var(--bs-dark);
+    border-color: var(--bs-gray);
+}
+.form-control-dark:focus {
+    color: #fff;
+    background-color: var(--bs-dark);
+    border-color: #fff;
+    box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
 }
 
-button:hover {
-    background-color: #0056b3;
+.bi {
+    vertical-align: -.125em;
+    fill: currentColor;
 }
 
-/* Centered form container */
-.upload-container,
-.auth-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 30px;
+.text-small {
+    font-size: 85%;
 }
 
-/* Google Login Button */
-button.google-login {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #fff;
-    color: #333;
-    border: 1px solid #ddd;
-    font-weight: 500;
-    transition: all 0.3s;
+.dropdown-toggle {
+    outline: 0;
 }
 
-button.google-login:hover {
-    background: #f1f1f1;
+body {
+    background-image: linear-gradient(180deg, #eee, #fff 100px, #fff);
 }
 
-button.google-login img {
-    width: 20px;
-    height: 20px;
-}
-
-/* Section Styling */
-h2 {
-    color: #222;
-    font-size: 1.8rem;
-    margin-top: 30px;
-    text-align: center;
-    font-weight: 500;
-}
-
-/* Horizontal line */
-hr {
-    width: 80%;
-    margin: 20px auto;
-    border: none;
-    height: 2px;
-    background-color: #ddd;
-}
-
-/* User Calendar */
-#user-calendar {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 30px;
-}
-
-#user-calendar h2 {
-    color: #007bff;
-    font-size: 1.5rem;
-}
-
-/* Contribution Calendars */
-#calendar-container {
-    display: block;
-    margin-top: 50px;
-}
-
-.calendar-item {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin: 10px auto;
-    text-align: center;
-    padding: 20px;
-}
-
-.calendar-item h3 {
-    font-size: 1.2rem;
-    color: #222;
-}
-
-/* Modal Styling */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 50%;
-    max-width: 450px;
-    text-align: center;
-    position: relative;
-}
-
-.close {
-    color: #aaa;
-    font-size: 24px;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: black;
-}
-
-/* Messages */
-.error-message {
-    color: red;
-    font-weight: 500;
-}
-
-.success-message {
-    color: green;
-    font-weight: 500;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-
-    .calendar-item {
-        width: 100%;
-    }
-
-    form {
-        width: 90%;
-    }
-
-    input,
-    button {
-        font-size: 0.9rem;
-    }
-
-    .auth-container {
-        flex-direction: column;
-    }
+.container {
+    max-width: 960px;
 }
