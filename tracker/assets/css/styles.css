@@ -38,3 +38,24 @@ body {
 .container {
     max-width: 960px;
 }
+
+.btn-primary {
+    background-color: #28a745;  
+    border-color: #28a745;  
+}
+
+.btn-primary:hover {
+    background-color: #218838;  
+    border-color: #1e7e34;  
+}
+
+
+h1 {
+    color: blue;
+}
+
+
+h2, h3, h4, h5, h6 {
+    color: #28a745;  
+}
+

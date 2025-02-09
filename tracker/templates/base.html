@@ -17,50 +17,55 @@
 </head>
 <body>
     <div class="container">
-        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-          <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-            <img class="bi me-2" width="40" height="40" role="img" aria-label="Bootstrap" src="{% static 'notepad.png' %}" alt="Notepad Logo">
-            <h1 class="bi me-2">ThesisTracker</h1>
-        </a>
-
-        <div class="auth-container">
-            {% if user.is_authenticated %}
+        <header class="d-flex align-items-center justify-content-md-between py-1 mb-2">
             <div>
-                <p>You are logged in as {{ user.username }}.</p>
-                <form action="{% url 'account_logout' %}?next=/" method="post">
+                <a href="/" class="d-flex align-items-end text-decoration-none">
+                    {% comment %} <img height="40" width="40" role="img" aria-label="Bootstrap" src="{% static 'notepad.png' %}" alt="Notepad Logo" class="me-2 mb-2.5"> {% endcomment %}
+                    <h1 class="mb-0">ThesisTracker</h1>
+                </a>
+            </div>
+                
+
+            <div class="auth-container">
+                {% if user.is_authenticated %}
+                <div class="d-flex align-items-center justify-content-md-between gap-4">
+                    <h3 class="user-label"> You are logged in as {{ user.username }}</h3>
+                    <form  action="{% url 'account_logout' %}?next=/" method="post">
+                        {% csrf_token %}
+                        <button class="google-login" type="submit">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <form method="post" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    <button type="submit">Log In</button>
+                </form>
+
+                <form method="post" action="{% url 'account_signup' %}">
+                    {% csrf_token %}
+                    <button type="submit">Sign Up</button>
+                </form>
+
+                {% load socialaccount %}
+                <form action="{% provider_login_url 'google' method='POST' %}?next=/" method="post">
                     {% csrf_token %}
                     <button class="google-login" type="submit">
-                        Logout
+                        <img src="{% static 'google_logo.png' %}" alt="Google Logo">
+                        Login with Google
                     </button>
                 </form>
+                {% endif %} 
             </div>
-            {% else %}
-            <form method="post" action="{% url 'account_login' %}">
-                {% csrf_token %}
-                <button type="submit">Log In</button>
-            </form>
+        </header>
 
-            <form method="post" action="{% url 'account_signup' %}">
-                {% csrf_token %}
-                <button type="submit">Sign Up</button>
-            </form>
-
-            {% load socialaccount %}
-            <form action="{% provider_login_url 'google' method='POST' %}?next=/" method="post">
-                {% csrf_token %}
-                <button class="google-login" type="submit">
-                    <img src="{% static 'google_logo.png' %}" alt="Google Logo">
-                    Login with Google
-                </button>
-            </form>
-            {% endif %} 
-        </div>
-      </div>
+    </div>
 
       {% block content %}{% endblock %}
     
-      <footer class="pt-4 my-md-8 pt-md-8 border-top">
+    <footer class="pt-4 my-md-8 pt-md-8 border-top">
         <div class="row">
-          <small class="d-block mb-3 text-muted">© 2025</small>
+          <medium class="d-block mb-3 text-muted">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
         </div>
-  </footer>
+    </footer> 

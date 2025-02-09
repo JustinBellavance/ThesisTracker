@@ -14,7 +14,7 @@ import json
 
 import os
 
-from .models import Thesis
+from .models import Thesis, CustomUser
 
 from django.http import JsonResponse
 
@@ -34,10 +34,11 @@ def upload_docx(request):
 
             previous_thesis = Thesis.objects.order_by('-upload_date').first()
 
-            word_diff = word_count - previous_thesis.word_change if previous_thesis else word_count
+            word_diff = word_count - previous_thesis.total_words if previous_thesis else word_count
 
             Thesis.objects.create(
                 username=request.user.username,
+                total_words=word_count,
                 word_change=word_diff,
             )
 
@@ -78,23 +79,23 @@ def load_contribution_calendars(request):
         heatmap_data, date_list, tooltip_text = generate_heatmap_data(user)
 
         week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-        day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        day_labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
         fig = go.Figure(
             data=go.Heatmap(
                 z=heatmap_data,
                 colorscale=[
                     [0.0, "#DDDDDD"],  
-                    [0.01, "#D6EAF8"],  
-                    [0.5, "#5DADE2"],  
-                    [1.0, "#154360"]  
+                    [0.01, "#A9DFBF"],  
+                    [0.5, "#28B463"],  
+                    [1.0, "#1D8348"]  
                 ],
                 zmin=0,
                 zmax=max(max(row) for row in heatmap_data) or 1,
                 x=week_labels,
                 y=day_labels,
-                xgap=2,
-                ygap=2,
+                xgap=1,
+                ygap=1,
                 text=tooltip_text,
                 hoverinfo="text"
             )
@@ -102,13 +103,14 @@ def load_contribution_calendars(request):
 
         fig.update_layout(
             xaxis={"visible": False, "showticklabels": False},  
-            margin={'t': 20, 'b': 0, 'l': 50, 'r': 50},
-            yaxis={"autorange": "reversed"}
+            yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
+            margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
         )
         fig.update_traces(showscale=False)
 
         calendars.append({
             "username": user,
+            "university": CustomUser.objects.filter(username=user).values_list("university", flat=True).first() or "Unknown",
             "graph": json.dumps(fig.to_dict(), cls=DjangoJSONEncoder)
         })
 
@@ -127,10 +129,12 @@ def generate_heatmap_data(username):
     tooltip_text = [[""] * 53 for _ in range(7)]  # Tooltip text array
 
     for date in date_list:
-        week_num = (date - start_date).days // 7
-        day_of_week = date.weekday()
+        # Adjust the start of the week to Monday
+        week_num = ((date - start_date).days) // 7
+        day_of_week = (date.weekday() + 1) % 7  # Shift days by 1 (Monday becomes 0, Sunday becomes 6)
         word_count = word_counts_by_date.get(date, 0)
 
+        # Place data in the appropriate location
         heatmap_data[day_of_week][week_num] = word_count
         tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d')}: {word_count} words"
 
@@ -144,33 +148,33 @@ def index(request):
     heatmap_data, date_list, tooltip_text = generate_heatmap_data(username)
 
     week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-    day_labels = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"]
+    day_labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     fig = go.Figure(
         data=go.Heatmap(
             z=heatmap_data,
-            colorscale=[  # Custom color scale
-                [0, "#DDDDDD"],  # Light grey for 0 values
-                [0.1, "#D6EAF8"],  
-                [0.5, "#5DADE2"],  
-                [1, "#154360"]  # Dark blue for high values
+            colorscale=[
+                [0.0, "#DDDDDD"],  
+                [0.01, "#A9DFBF"],  
+                [0.5, "#28B463"],  
+                [1.0, "#1D8348"]  
             ],
             zmin=0,
+            zmax=max(max(row) for row in heatmap_data) or 1,
             x=week_labels,
             y=day_labels,
-            xgap=2,
-            ygap=2,
-            text=tooltip_text,  # Assign custom tooltip text
-            hoverinfo="text"  # Ensure only text is shown on hover
+            xgap=1,
+            ygap=1,
+            text=tooltip_text,
+            hoverinfo="text"
         )
     )
 
     fig.update_layout(
         xaxis={"visible": False, "showticklabels": False},  
-        margin={'t': 0, 'b': 0, 'l': 50, 'r': 50},
-        yaxis={"autorange": "reversed"}
+        yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
+        margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
     )
-
     fig.update_traces(showscale=False)
 
     context = {

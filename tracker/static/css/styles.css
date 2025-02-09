@@ -1,3 +1,181 @@
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: #f5f7f9;
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+    background-image: linear-gradient(180deg, #f0f4f8, #ffffff 100px, #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Allow full-page scrolling */
+}
+
+body, .container {
+    width: 100%;
+    max-width: none;
+}
+
+header {
+    width: 100%;
+}
+
+/* Title styling */
+h1 {
+    text-align: center;
+    color: #06402B; /* green */
+    font-size: 3rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+h2 {
+    text-align: left;
+    color: #06402B !important; /* green */ 
+    font-weight: 600;
+    font-size: 2.5em !important;
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Upload form container to align file input and button in a row */
+.upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.auth-container {
+    display: flex;
+    flex-direction: row;  
+    justify-content: space-between;
+    align-items: center;
+    padding : 0px;
+    gap : 10px;
+    white-space: nowrap; /* Prevents line breaks */
+    max-width: fit-content; /* Makes sure it only takes as much space as needed */
+}
+
+/* Input and button styling */
+input[type="file"], button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+input[type="file"]:hover, button:hover {
+    border-color:#06402B; /* green */
+}
+
+/* Button styling for Google login */
+button.google-login {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap; /* Prevents line breaks */
+    max-width: fit-content; /* Makes sure it only takes as much space as needed */
+}
+
+button.google-login img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+/* Section for user authentication */
+h2 {
+    color: #333;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Divider styling */
+hr {
+    width: 100%;
+    border-color: #ddd;
+}
+
+.user-label {
+    font-size: 1.25rem; 
+    font-weight: 600;    
+    color: #333;       
+    margin: 10px 0;    
+}
+
+/* User logged-in section */
+#user-calendar {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding-right: 40px;
+    width: 90%;
+}
+
+#chart {
+    aspect-ratio: 7.6;
+}
+
+/* Calendar container section */
+#calendar-container {
+    display: block;
+    width: 90%;
+}
+
+
+/* Individual calendar item */
+.calendar-item {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+    text-align: center;
+    padding: 20px;
+}
+
+.js-plotly-plot {
+    aspect-ratio: 7.6;
+}
+
+.calendar-item h3 {
+    font-size: 1.25rem;   
+    font-weight: 600;     
+    color: #333;        
+    margin: 10px 0;      
+}
+
+#calendars {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: none; 
+    overflow-y: visible; 
+    width: 100%; 
+}
+
 .b-example-divider {
     height: 3rem;
     background-color: rgba(0, 0, 0, .1);
@@ -6,11 +184,13 @@
     box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
 }
 
+/* Dark form control styling */
 .form-control-dark {
     color: #fff;
     background-color: var(--bs-dark);
     border-color: var(--bs-gray);
 }
+
 .form-control-dark:focus {
     color: #fff;
     background-color: var(--bs-dark);
@@ -18,23 +198,114 @@
     box-shadow: 0 0 0 .25rem rgba(255, 255, 255, .25);
 }
 
-.bi {
-    vertical-align: -.125em;
-    fill: currentColor;
+.btn-primary {
+    background-color: #06402B;
+    border-color: #06402B;
 }
 
-.text-small {
-    font-size: 85%;
+/* General form floating styles */
+.form-floating {
+    position: relative;
+    margin-bottom: 1.5rem;
+    font-family: 'Inter', sans-serif;
 }
 
-.dropdown-toggle {
-    outline: 0;
+.form-floating input,
+.form-floating select,
+.form-floating textarea {
+    width: 100%;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #f8f9fb;
+    transition: all 0.3s ease;
 }
 
-body {
-    background-image: linear-gradient(180deg, #eee, #fff 100px, #fff);
+.form-floating input:focus,
+.form-floating select:focus,
+.form-floating textarea:focus {
+    border-color: #06402B;  /* Green border on focus */
+    outline: none;
 }
 
-.container {
-    max-width: 960px;
+.form-floating label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #6c757d;
+    font-weight: 500;
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Floating label effect on focus */
+.form-floating input:focus ~ label,
+.form-floating select:focus ~ label,
+.form-floating textarea:focus ~ label,
+.form-floating input:not(:placeholder-shown) ~ label,
+.form-floating select:not(:placeholder-shown) ~ label,
+.form-floating textarea:not(:placeholder-shown) ~ label {
+    top: 0;
+    left: 1rem;
+    font-size: 0.875rem;
+    color: #28a745;  /* Green color when focused or filled */
+    font-weight: 600;
+}
+
+/* Error styling */
+.error {
+    color: #e74c3c;
+    font-size: 0.875rem;
+    margin-top: 5px;
+}
+
+/* Error message styling for individual fields */
+.error p {
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+}
+
+/* Subtle shadow effect on input */
+.form-floating input,
+.form-floating select,
+.form-floating textarea {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-floating input:focus,
+.form-floating select:focus,
+.form-floating textarea:focus {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .calendar-item {
+        width: 100%;
+    }
+
+    input[type="file"], button {
+        font-size: 0.9rem;
+    }
+
+    button.google-login {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+    }
+
+    .auth-container {
+        flex-direction: column;
+        gap: 10px;
+    }
 }

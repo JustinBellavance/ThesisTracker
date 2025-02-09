@@ -5,10 +5,8 @@
     <form method="post">
         {% csrf_token %}
         
-        <!-- Username Field -->
         <div class="form-floating">
             {{ form.username }}
-            <label for="{{ form.username.id_for_label }}">Username</label>
             {% if form.username.errors %}
                 <div class="error">
                     {% for error in form.username.errors %}
@@ -18,10 +16,8 @@
             {% endif %}
         </div>
 
-        <!-- Email Field -->
         <div class="form-floating">
             {{ form.email }}
-            <label for="{{ form.email.id_for_label }}">Email address</label>
             {% if form.email.errors %}
                 <div class="error">
                     {% for error in form.email.errors %}
@@ -31,10 +27,8 @@
             {% endif %}
         </div>
 
-        <!-- University Field -->
         <div class="form-floating">
             {{ form.university }}
-            <label for="{{ form.university.id_for_label }}">Current University</label>
             {% if form.university.errors %}
                 <div class="error">
                     {% for error in form.university.errors %}
@@ -44,10 +38,8 @@
             {% endif %}
         </div>
 
-        <!-- Password Field -->
         <div class="form-floating">
             {{ form.password1 }}
-            <label for="{{ form.password1.id_for_label }}">Password</label>
             {% if form.password1.errors %}
                 <div class="error">
                     {% for error in form.password1.errors %}
@@ -57,10 +49,8 @@
             {% endif %}
         </div>
 
-        <!-- Confirm Password Field -->
         <div class="form-floating">
             {{ form.password2 }}
-            <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
             {% if form.password2.errors %}
                 <div class="error">
                     {% for error in form.password2.errors %}
@@ -71,7 +61,9 @@
         </div>
 
         <button type="submit" class="w-100 btn btn-lg btn-primary">Sign Up</button>
+        
+        <p>Already have an account? <a class="w-100 btn btn-lg btn-primary" href="{% url 'account_login' %}">Log in</a></p>
     </form>
 
-    <p>Already have an account? <a class="w-100 btn btn-lg btn-primary" href="{% url 'login' %}">Log in</a></p>
+
 {% endblock %}

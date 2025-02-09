@@ -7,20 +7,33 @@
 
         {% if user.is_authenticated %}
 
-        <h2>Upload your Thesis (.docx only!)</h2>
+        <div style="margin-top:80px; margin-bottom:80px;">
+            <h2>Upload your Thesis</h2>
 
-        <form id="uploadForm" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="docx_file" accept=".docx" required>
-            <button id="uploadButton" data-upload-url="{% url 'upload_docx' %}">Upload</button>
-        </form>
+            <form id="uploadForm" class="d-flex align-items-center justify-content-center flex-row gap-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" name="docx_file" accept=".docx" required>
+                <button id="uploadButton" data-upload-url="{% url 'upload_docx' %}" data-bs-toggle="modal" data-bs-target="#exampleModal">Upload</button>
+            </form>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     
         {% endif %}
 
-
         {% if user.is_authenticated %}
-        <div id="user-calendar">
-            <h2>Your Contribution Calendar</h2>
+        <h2>Your Contribution Calendar</h2>
+        <div id="user-calendar" style="margin-bottom:80px;">
             <div id="chart"></div>
             <script>
                 var graphData = JSON.parse('{{ graph|escapejs }}');
@@ -31,7 +44,7 @@
         {% endif %}
 
         <h2>Community Contribution Calendars</h2>
-        <div id="calendar-container"></div>
+        <div id="calendar-container" class="mb-4"></div>
     </div>
 {% endblock %}
 
