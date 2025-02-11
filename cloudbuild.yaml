@@ -1,13 +1,13 @@
 steps:
 # Build the image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', '${IMAGE}', '.']
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/thesistracker-448622/thesistracker/thesistracker:tag1', '.']
 # Push the image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', '${IMAGE}']
+  args: ['push', 'us-central1-docker.pkg.dev/thesistracker-448622/thesistracker/thesistracker:tag1']
 # Deploy image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
-  args: ['run', 'deploy', 'thesistracker', '--image', '${IMAGE}', '--region', 'us-west2']
+  args: ['run', 'deploy', 'thesistracker', '--image', 'us-central1-docker.pkg.dev/thesistracker-448622/thesistracker/thesistracker:tag1', '--region', 'us-central1']
 images:
-- '${IMAGE}'
+- 'us-central1-docker.pkg.dev/thesistracker-448622/thesistracker/thesistracker:tag1'
