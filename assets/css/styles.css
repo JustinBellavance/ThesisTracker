@@ -203,6 +203,11 @@ hr {
     border-color: #06402B;
 }
 
+.btn-primary:hover {
+    background-color: #042a1c !important;
+    border-color: #042a1c !important;
+}
+
 /* General form floating styles */
 .form-floating {
     position: relative;

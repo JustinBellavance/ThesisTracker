@@ -15,22 +15,23 @@
 
     <title>ThesisTracker</title>
 </head>
-<body>
-    <div class="container">
-        <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-1 mb-2">
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+    <div class="container" style="flex: 1;">
+        <header class="d-flex align-items-center justify-content-md-between py-1 mb-2">
             <div>
                 <a href="/" class="d-flex align-items-end text-decoration-none">
-                    {% comment %} <img height="40" width="40" role="img" aria-label="Bootstrap" src="{% static 'notepad.png' %}" alt="Notepad Logo" class="me-2 mb-2.5"> {% endcomment %}
                     <h1 class="mb-0">ThesisTracker</h1>
                 </a>
             </div>
         </header>
+
+        {% block content %}{% endblock %}
     </div>
 
-      {% block content %}{% endblock %}
-    
-      {% comment %} <footer class="pt-4 my-md-8 pt-md-8 border-top">
+    <footer class="pt-4 my-md-8 pt-md-8 border-top" >
         <div class="row">
-          <small class="d-block mb-3 text-muted">© 2025</small>
+            <medium class="d-block mb-3 text-muted">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
         </div>
-  </footer> {% endcomment %}
+    </footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+steps:
+# Build the image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', '${IMAGE}', '.']
+# Push the image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${IMAGE}']
+# Deploy image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args: ['run', 'deploy', 'thesistracker', '--image', '${IMAGE}', '--region', 'us-west2']
+images:
+- '${IMAGE}'

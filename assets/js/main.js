@@ -48,8 +48,6 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(data) {                
-                // Stringify the 'data' and add it after the message
-                var message = JSON.stringify(data.message); 
                 $(".modal-body").text(data.message);  // Combine message and stringified data
                 $('#exampleModal').modal('show');  // Show the modal
             },

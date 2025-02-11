@@ -105,6 +105,7 @@ def load_contribution_calendars(request):
             xaxis={"visible": False, "showticklabels": False},  
             yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
             margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            dragmode=False,
         )
         fig.update_traces(showscale=False)
 
