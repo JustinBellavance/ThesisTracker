@@ -79,19 +79,18 @@ def load_contribution_calendars(request):
         heatmap_data, date_list, tooltip_text = generate_heatmap_data(user)
 
         week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-        day_labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        day_labels = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
 
         fig = go.Figure(
             data=go.Heatmap(
                 z=heatmap_data,
                 colorscale=[
                     [0.0, "#DDDDDD"],  
-                    [0.01, "#A9DFBF"],  
                     [0.5, "#28B463"],  
                     [1.0, "#1D8348"]  
                 ],
-                zmin=0,
-                zmax=max(max(row) for row in heatmap_data) or 1,
+                zmin=0,  # Ensure None values are not considered
+                zmax=max((max([val for val in row if val is not None], default=0)) for row in heatmap_data) or 1,
                 x=week_labels,
                 y=day_labels,
                 xgap=1,
@@ -105,8 +104,11 @@ def load_contribution_calendars(request):
             xaxis={"visible": False, "showticklabels": False},  
             yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
             margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            paper_bgcolor="white",  # White background
+            plot_bgcolor="white",    # White background
             dragmode=False,
         )
+
         fig.update_traces(showscale=False)
 
         calendars.append({
@@ -120,26 +122,43 @@ def load_contribution_calendars(request):
 
 def generate_heatmap_data(username):
     today = datetime.now().date()
+    
+    # Align start_date to the most recent Sunday
     start_date = today - timedelta(days=364)
+    while start_date.weekday() != 0:  # 0 is Sunday
+        start_date -= timedelta(days=1)
 
     date_list = [start_date + timedelta(days=i) for i in range(365)]
-    word_counts_by_date = {thesis.upload_date.date(): thesis.word_change 
-                           for thesis in Thesis.objects.filter(username=username)}
+    word_counts_by_date = {
+        thesis.upload_date.date(): thesis.word_change 
+        for thesis in Thesis.objects.filter(username=username)
+    }
 
-    heatmap_data = [[0] * 53 for _ in range(7)]
-    tooltip_text = [[""] * 53 for _ in range(7)]  # Tooltip text array
+    heatmap_data = [[None] * 53 for _ in range(7)]
+    tooltip_text = [[""] * 53 for _ in range(7)]
 
     for date in date_list:
-        # Adjust the start of the week to Monday
+        if date > today:
+            continue  
+
         week_num = ((date - start_date).days) // 7
-        day_of_week = (date.weekday() + 1) % 7  # Shift days by 1 (Monday becomes 0, Sunday becomes 6)
+        day_of_week = date.weekday()
         word_count = word_counts_by_date.get(date, 0)
 
-        # Place data in the appropriate location
         heatmap_data[day_of_week][week_num] = word_count
         tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d')}: {word_count} words"
 
+    # **Fix Alignment for First Column**
+    last_column = [heatmap_data[row][week_num] for row in range(7)]
+    non_none_days = sum(1 for v in last_column if v is not None)
+    missing_days = non_none_days  # Empty spaces needed
+
+    for i in range(missing_days):
+        heatmap_data[i][0] = None  # Fill first N spots in first column with None
+        tooltip_text[i][0] = None
+
     return heatmap_data, date_list, tooltip_text
+
 
 def index(request):
     if not request.user.username:
@@ -149,19 +168,18 @@ def index(request):
     heatmap_data, date_list, tooltip_text = generate_heatmap_data(username)
 
     week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-    day_labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    day_labels = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
 
     fig = go.Figure(
         data=go.Heatmap(
             z=heatmap_data,
             colorscale=[
                 [0.0, "#DDDDDD"],  
-                [0.01, "#A9DFBF"],  
                 [0.5, "#28B463"],  
                 [1.0, "#1D8348"]  
             ],
-            zmin=0,
-            zmax=max(max(row) for row in heatmap_data) or 1,
+            zmin=0,  # Ensure None values are not considered
+            zmax=max((max([val for val in row if val is not None], default=0)) for row in heatmap_data) or 1,
             x=week_labels,
             y=day_labels,
             xgap=1,
@@ -175,7 +193,11 @@ def index(request):
         xaxis={"visible": False, "showticklabels": False},  
         yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
         margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
+        paper_bgcolor="white",  # White background
+        plot_bgcolor="white",    # White background
+        dragmode=False,
     )
+
     fig.update_traces(showscale=False)
 
     context = {

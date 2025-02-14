@@ -44,6 +44,10 @@ h2 {
     font-size: 2.5em !important;
 }
 
+p {
+    font-size: 1.2em !important;
+}
+
 /* Form styling */
 form {
     display: flex;
@@ -85,6 +89,10 @@ input[type="file"], button {
 
 input[type="file"]:hover, button:hover {
     border-color:#06402B; /* green */
+}
+
+.checkbox label {
+    font-size: 1.2em; /* Adjust the font size as needed */
 }
 
 /* Button styling for Google login */
@@ -201,6 +209,7 @@ hr {
 .btn-primary {
     background-color: #06402B;
     border-color: #06402B;
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
 .btn-primary:hover {

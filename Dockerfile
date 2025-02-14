@@ -25,4 +25,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENTRYPOINT []
 
 # Set the default command to run the Django development server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+CMD ["uv", "run", "gunicorn", "--bind", "0.0.0.0:8080", "thesistrackerdjango.wsgi:application","--access-logfile", "logs/gunicorn_access.log", "--error-logfile", "logs/gunicorn_error.log"]
