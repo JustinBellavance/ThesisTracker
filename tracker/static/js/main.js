@@ -19,7 +19,10 @@ $(document).ready(function() {
                 $("#calendar-container").append(calendarDiv);
 
                 const graphData = JSON.parse(calendar.graph);
-                Plotly.newPlot(chartDiv.attr("id"), graphData.data, graphData.layout, { displayModeBar: false });
+                
+                setTimeout(() => {
+                    Plotly.newPlot(chartDiv.attr("id"), graphData.data, graphData.layout, { displayModeBar: false });
+                }, 100);
 
                 offset++;
             });

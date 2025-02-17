@@ -30,9 +30,15 @@
                 {% if user.is_authenticated %}
                 <div class="d-flex align-items-center justify-content-md-between gap-4">
                     <h3 class="user-label"> You are logged in as {{ user.username }}</h3>
+                    <form method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            Profile
+                        </button>
+                    </form>
                     <form  action="{% url 'account_logout' %}?next=/" method="post">
                         {% csrf_token %}
-                        <button class="google-login" type="submit">
+                        <button type="submit">
                             Logout
                         </button>
                     </form>

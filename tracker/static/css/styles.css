@@ -56,6 +56,13 @@ form {
     width: 100%;
 }
 
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 /* Upload form container to align file input and button in a row */
 .upload-container {
     display: flex;
@@ -82,13 +89,18 @@ input[type="file"], button {
     padding: 12px 20px;
     font-size: 1rem;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid gray;
     background-color: #fff;
     transition: all 0.3s ease;
 }
 
 input[type="file"]:hover, button:hover {
-    border-color:#06402B; /* green */
+    border-color: #06402B; /* green */
+}
+
+button:hover {
+    background-color: #06402B;
+    color: #fff;
 }
 
 .checkbox label {
@@ -139,7 +151,6 @@ hr {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding-right: 40px;
     width: 90%;
 }
 
@@ -237,7 +248,7 @@ hr {
 .form-floating input:focus,
 .form-floating select:focus,
 .form-floating textarea:focus {
-    border-color: #06402B;  /* Green border on focus */
+    border-color: #06402B; 
     outline: none;
 }
 

@@ -1,0 +1,44 @@
+{% extends "base_noauth.html" %}
+
+{% block content %}
+<div class="main">
+    <h1 class="m-2">Your Profile Information</h1>
+    <div class="d-flex flex-column" style="width:35%">
+        <form method="post" action="{% url 'profile' %}">
+            {% csrf_token %}
+            
+            <div class="form-floating mb-3">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            
+            <div class="form-floating mb-3">
+                <label for="university">University:</label>
+                <input type="text" id="university" name="university" class="form-control" value="{{ user.profile.university }}" required>
+            </div>
+            
+            <div class="form-floating mb-3 position-relative">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" class="form-control" value="{{ user.profile.password }}" required>
+                <span class="position-absolute end-0 top-50 translate-middle-y me-3" style="cursor: pointer;" onclick="togglePassword()">
+                    👁️
+                </span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        let passwordField = document.getElementById("password");
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+</script>
+{% endblock %}

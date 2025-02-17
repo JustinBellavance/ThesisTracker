@@ -79,7 +79,7 @@ def load_contribution_calendars(request):
         heatmap_data, date_list, tooltip_text = generate_heatmap_data(user)
 
         week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-        day_labels = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
+        day_labels = ["Sun  ", "Mon  ", "Tue  ", "Wed  ", "Thu  ", "Fri  ", "Sat  "]
 
         fig = go.Figure(
             data=go.Heatmap(
@@ -103,9 +103,9 @@ def load_contribution_calendars(request):
         fig.update_layout(
             xaxis={"visible": False, "showticklabels": False},  
             yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
-            margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            paper_bgcolor="white",  # White background
-            plot_bgcolor="white",    # White background
+            margin={'t': 0, 'b': 0, 'l': 10, 'r': 0},
+            paper_bgcolor="white", 
+            plot_bgcolor="white",    
             dragmode=False,
         )
 
@@ -122,13 +122,15 @@ def load_contribution_calendars(request):
 
 def generate_heatmap_data(username):
     today = datetime.now().date()
-    
+        
     # Align start_date to the most recent Sunday
-    start_date = today - timedelta(days=364)
-    while start_date.weekday() != 0:  # 0 is Sunday
+    start_date = today - timedelta(days=365)
+        
+    while start_date.weekday() != 6:  # 6 is Sunday
         start_date -= timedelta(days=1)
 
-    date_list = [start_date + timedelta(days=i) for i in range(365)]
+    date_list = [start_date + timedelta(days=i) for i in range(366)]
+    
     word_counts_by_date = {
         thesis.upload_date.date(): thesis.word_change 
         for thesis in Thesis.objects.filter(username=username)
@@ -138,20 +140,23 @@ def generate_heatmap_data(username):
     tooltip_text = [[""] * 53 for _ in range(7)]
 
     for date in date_list:
-        if date > today:
-            continue  
 
         week_num = ((date - start_date).days) // 7
         day_of_week = date.weekday()
+        
+        # sunday first
+        day_of_week += 1
+        if day_of_week == 7:
+            day_of_week = 0
+            
         word_count = word_counts_by_date.get(date, 0)
 
         heatmap_data[day_of_week][week_num] = word_count
-        tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d')}: {word_count} words"
+        tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d %Y')}: {word_count} words"
 
-    # **Fix Alignment for First Column**
+    # make first column aligned with rest
     last_column = [heatmap_data[row][week_num] for row in range(7)]
-    non_none_days = sum(1 for v in last_column if v is not None)
-    missing_days = non_none_days  # Empty spaces needed
+    missing_days = sum(1 for v in last_column if v is not None)
 
     for i in range(missing_days):
         heatmap_data[i][0] = None  # Fill first N spots in first column with None
@@ -168,7 +173,7 @@ def index(request):
     heatmap_data, date_list, tooltip_text = generate_heatmap_data(username)
 
     week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
-    day_labels = ["Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "]
+    day_labels = ["Sun  ", "Mon  ", "Tue  ", "Wed  ", "Thu  ", "Fri  ", "Sat  "]
 
     fig = go.Figure(
         data=go.Heatmap(
@@ -193,8 +198,8 @@ def index(request):
         xaxis={"visible": False, "showticklabels": False},  
         yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
         margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
-        paper_bgcolor="white",  # White background
-        plot_bgcolor="white",    # White background
+        paper_bgcolor="white", 
+        plot_bgcolor="white",  
         dragmode=False,
     )
 
@@ -212,6 +217,12 @@ def login(request):
 
 # def signup(request):
 #     return render(request, "account/signup.html")
+
+@login_required
+def profile(request):
+    user = request.user  # Get the logged-in user (CustomUser instance)
+
+    return render(request, "profile.html", {"user": user})  # Pass user data to the template
 
 def signup_view(request):
     if request.method == "POST":
