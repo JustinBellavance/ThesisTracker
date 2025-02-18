@@ -7,38 +7,27 @@
         <form method="post" action="{% url 'profile' %}">
             {% csrf_token %}
             
-            <div class="form-floating mb-3">
-                <label for="username">Username:</label>
+            <div class="mb-3 d-flex align-items-center">
+                <label for="username" class="me-2" style="width: 30%;">Username:</label>
                 <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" required>
             </div>
             
-            <div class="form-floating mb-3">
-                <label for="email">Email:</label>
+            <div class="mb-3 d-flex align-items-center">
+                <label for="email" class="me-2" style="width: 30%;">Email:</label>
                 <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
             </div>
             
-            <div class="form-floating mb-3">
-                <label for="university">University:</label>
-                <input type="text" id="university" name="university" class="form-control" value="{{ user.profile.university }}" required>
+            <div class="mb-3 d-flex align-items-center">
+                <label for="university" class="me-2" style="width: 30%;">University:</label>
+                <input type="text" id="university" name="university" class="form-control" value="{{ user.university }}" required>
             </div>
-            
-            <div class="form-floating mb-3 position-relative">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" class="form-control" value="{{ user.profile.password }}" required>
-                <span class="position-absolute end-0 top-50 translate-middle-y me-3" style="cursor: pointer;" onclick="togglePassword()">
-                    👁️
-                </span>
+
+            <div class="mb-3">
+                <a href="{% url 'password_reset' %}" class="btn btn-outline-danger">Reset Password</a>
             </div>
-            
+
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
     </div>
 </div>
-
-<script>
-    function togglePassword() {
-        let passwordField = document.getElementById("password");
-        passwordField.type = passwordField.type === "password" ? "text" : "password";
-    }
-</script>
 {% endblock %}

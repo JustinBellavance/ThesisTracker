@@ -17,6 +17,7 @@ dependencies = [
     "pycparser>=2.22",
     "pyjwt==1.7.1",
     "python-docx>=1.1.2",
+    "python-dotenv>=1.0.1",
     "requests>=2.32.3",
     "rsa>=4.9",
     "slackclient>=2.9.4",
