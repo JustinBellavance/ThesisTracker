@@ -11,7 +11,6 @@
     {% load static %}
     <link rel="icon" href="{% static 'notepad.png' %}"></link>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script src="{% static 'js/main.js' %}"></script>
 
     <title>ThesisTracker</title>
 </head>
@@ -23,14 +22,22 @@
                     <h1 class="mb-0">ThesisTracker</h1>
                 </a>
             </div>
+            <div class="auth-container">
+                <form method="get" action="{% url 'index' %}">
+                    {% csrf_token %}
+                    <button type="submit">Home</button>
+                </form>
+            </div>
         </header>
+
+
 
         {% block content %}{% endblock %}
     </div>
 
     <footer class="pt-4 my-md-8 pt-md-8 border-top" >
         <div class="row">
-            <medium class="d-block mb-3 text-muted">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
+            <medium class="d-block mb-3 text-muted text-center">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
         </div>
     </footer>
 </body>

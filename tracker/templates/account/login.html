@@ -1,11 +1,20 @@
 {% extends "base_noauth.html" %}
 
 {% block content %}
-<form method="post" action="{% url 'account_login' %}">
+
+{% if form.errors %}
+    <div class="alert alert-danger">
+        {% for field, errors in form.errors.items %}
+            {{ errors|striptags }}<br>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="post" action="{% url 'account_login' %}" class="centered">
     {% csrf_token %}
 
     <h1>Login</h1>
-    <div class="d-flex flex-column" style="width:35%">
+    <div class="d-flex flex-column justify-content-center" style="width:35%">
         <div class="form-floating">
             <input type="email" class="form-control" id="floatingInput" name="login" placeholder="name@example.com" required>
             <label for="floatingInput">Email address</label>
@@ -19,8 +28,8 @@
                 <input type="checkbox" name="remember" value="true"> Remember me
             </label>
         </div> {% endcomment %}
-        <button class="w-100 mb-4 btn btn-lg btn-primary" type="submit">Log in</button>
-        <p>Don't have an account? <a class="w-100 btn btn-lg btn-primary" href="{% url 'account_signup' %}">Sign up</a></p>
+        <button class="w-100 mb-4 btn btn-lg btn-primary text-center" type="submit">Log in</button>
+        <p>Don't have an account? <a class="w-100 btn btn-lg btn-primary text-center" href="{% url 'account_signup' %}">Sign up</a></p>
     </div>
 </form>
 {% endblock %}

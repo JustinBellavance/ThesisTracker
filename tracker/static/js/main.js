@@ -10,7 +10,7 @@ $(document).ready(function() {
             data.calendars.forEach(function(calendar) {
                 const calendarDiv = $("<div>").addClass("calendar-item");
 
-                const userLabel = $("<h3>").addClass("user-label").text(calendar.username + " - " + calendar.university);
+                const userLabel = $("<h3>").addClass("user-label").text(calendar.username + " - " + calendar.university + " - " + calendar.thesis_title);
                 calendarDiv.append(userLabel);
 
                 const chartDiv = $("<div>").attr("id", `chart-${offset}`);
@@ -37,31 +37,40 @@ $(document).ready(function() {
         }
     });
 
-    // Handle form submission
     $("#uploadForm").submit(function (event) {
-        event.preventDefault(); 
-
+        event.preventDefault();
+    
         var formData = new FormData(this);
-        var uploadUrl = $("#uploadButton").data("upload-url");  // Retrieve the URL from the data attribute
-
+        var uploadUrl = $("#uploadButton").data("upload-url");
+    
         $.ajax({
-            url: uploadUrl,  // Use the URL from the data attribute
+            url: uploadUrl,
             method: "POST",
             data: formData,
             processData: false,
             contentType: false,
-            success: function(data) {                
-                $(".modal-body").text(data.message);  // Combine message and stringified data
-                $('#exampleModal').modal('show');  // Show the modal
+            success: function(data) {
+                $(".modal-body").text(data.message);
+                $('#exampleModal').modal('show');
+    
+                // Refresh the page after the modal is closed
+                $('#exampleModal').on('hidden.bs.modal', function () {
+                    location.reload();
+                });
             },
             error: function() {
-                // Custom text when there's an error
-                $(".modal-body").text("An error occurred. Please try again.");  // Update the modal body text
+                $(".modal-body").text("An error occurred. Please try again.");
             }
         });
     });
+    
 
     $(".btn-secondary").click(function() {
         $('#exampleModal').modal('hide');  // This will manually hide the modal when clicked
+    });
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 });

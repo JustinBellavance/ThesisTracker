@@ -11,7 +11,6 @@
     {% load static %}
     <link rel="icon" href="{% static 'notepad.png' %}"></link>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <script src="{% static 'js/main.js' %}"></script>
 
     <title>ThesisTracker</title>
 </head>
@@ -30,13 +29,19 @@
                 {% if user.is_authenticated %}
                 <div class="d-flex align-items-center justify-content-md-between gap-4">
                     <h3 class="user-label"> You are logged in as {{ user.username }}</h3>
-                    <form method="post" action="{% url 'profile' %}">
+                    <form method="get" action="{% url 'profile' %}">
                         {% csrf_token %}
-                        <button type="submit">
-                            Profile
-                        </button>
+                        <div class="d-flex justify-content-space-between">
+                            <button type="submit">
+                                Profile
+                                {% if has_missing_info %}
+                                    <span class="warning-icon" data-bs-toggle="tooltip" title="Your profile has missing information">!</span>
+                                {% endif %}
+                            </button>
+
+                        </div>
                     </form>
-                    <form  action="{% url 'account_logout' %}?next=/" method="post">
+                    <form  action="{% url 'account_logout' %}" method="post">
                         {% csrf_token %}
                         <button type="submit">
                             Logout
@@ -44,18 +49,18 @@
                     </form>
                 </div>
                 {% else %}
-                <form method="post" action="{% url 'account_login' %}">
+                <form method="get" action="{% url 'account_login' %}">
                     {% csrf_token %}
                     <button type="submit">Log In</button>
                 </form>
 
-                <form method="post" action="{% url 'account_signup' %}">
+                <form method="get" action="{% url 'account_signup' %}">
                     {% csrf_token %}
                     <button type="submit">Sign Up</button>
                 </form>
 
                 {% load socialaccount %}
-                <form action="{% provider_login_url 'google' method='POST' %}?next=/" method="post">
+                <form action="{% provider_login_url 'google' process='login' %}" method="get">
                     {% csrf_token %}
                     <button class="google-login" type="submit">
                         <img src="{% static 'google_logo.png' %}" alt="Google Logo">
@@ -72,6 +77,6 @@
     
     <footer class="pt-4 my-md-8 pt-md-8 border-top">
         <div class="row">
-          <medium class="d-block mb-3 text-muted">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
+          <medium class="d-block mb-3 text-muted  text-center">Any comments or questions? Contact : justin.bellavance@gmail.com</medium>
         </div>
     </footer> 

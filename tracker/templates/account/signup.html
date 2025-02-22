@@ -1,36 +1,49 @@
 {% extends "base_noauth.html" %}
 
 {% block content %}
+
+{% if form.errors %}
+    <div class="alert alert-danger">
+        {% for field, errors in form.errors.items %}
+            <strong>{{ field|title }}:</strong> {{ errors|striptags }}<br>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <h1>Sign Up</h1>
-<form method="post" action="{% url 'account_signup' %}">
+<form method="post" action="{% url 'account_signup' %}" class="centered">
     {% csrf_token %}
 
     <div class="d-flex flex-column" style="width:35%">
         <div class="form-floating">
             <input type="text" class="form-control" id="floatingUsername" name="username" placeholder="Username" required>
-            <label for="floatingUsername">Username</label>
+            <label for="floatingUsername">Username <span class="required-asterisk">*</span></label>
         </div>
         <div class="form-floating">
             <input type="email" class="form-control" id="floatingEmail" name="email" placeholder="name@example.com" required>
-            <label for="floatingEmail">Email address</label>
+            <label for="floatingEmail">Email address <span class="required-asterisk">*</span></label>
         </div>
         <div class="form-floating">
             <input type="text" class="form-control" id="floatingUniversity" name="university" placeholder="Concordia University">
             <label for="floatingUniversity">University</label>
         </div>
         <div class="form-floating">
+            <input type="text" class="form-control" id="floatingThesisTitle" name="thesis_title" placeholder="Olfactory Ethics: The Politics of Smell in Modern and Contemporary Prose.">
+            <label for="floatingThesisTitle">Thesis Title</label>
+        </div>
+        <div class="form-floating">
             <input type="password" class="form-control" id="floatingPassword1" name="password1" placeholder="Password" required>
-            <label for="floatingPassword1">Password</label>
+            <label for="floatingPassword1">Password <span class="required-asterisk">*</span></label>
         </div>
         <div class="form-floating">
             <input type="password" class="form-control" id="floatingPassword2" name="password2" placeholder="Confirm Password" required>
-            <label for="floatingPassword2">Confirm Password</label>
+            <label for="floatingPassword2">Confirm Password <span class="required-asterisk">*</span></label>
         </div>
 
-        <button class="w-100 mb-4 btn btn-lg btn-primary" type="submit">Sign Up</button>
+        <button class="w-100 mb-4 btn btn-lg btn-primary text-center" type="submit">Sign Up</button>
 
         <p>Already have an account? 
-            <a class="w-100 btn btn-lg btn-primary" href="{% url 'account_login' %}">Log in</a>
+            <a class="w-100 btn btn-lg btn-primary text-center" href="{% url 'account_login' %}">Log in</a>
         </p>
     </div>
 </form>

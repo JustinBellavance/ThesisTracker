@@ -2,12 +2,13 @@
 
 {% block content %}
 {% load static %}
-    
+    <script src="{% static 'js/main.js' %}"></script>
+
     <div id="calendars">
 
         {% if user.is_authenticated %}
 
-        <div style="margin-top:80px; margin-bottom:80px;">
+        <div style="margin-top:40px; margin-bottom:40px;">
             <h2>Upload your Thesis</h2>
 
             <form id="uploadForm" class="d-flex align-items-center justify-content-center flex-row gap-2" enctype="multipart/form-data">
@@ -28,18 +29,22 @@
             </div>
         </div>
 
-    
-        {% endif %}
-
-        {% if user.is_authenticated %}
         <h2>Your Contribution Calendar</h2>
-        <div id="user-calendar" style="margin-bottom:80px;">
+        <div id="user-calendar">
+            <h3 class="user-label">{{ user.username }} - {{ user.university }} - {{ user.thesis_title }}</h3>
             <div id="chart"></div>
             <script>
                 var graphData = JSON.parse('{{ graph|escapejs }}');
-                var graphConfig = JSON.parse('{{ config|escapejs }}');
-                Plotly.newPlot('chart', graphData.data, graphData.layout, graphConfig);
+                
+                setTimeout(() => {
+                    Plotly.newPlot('chart', graphData.data, graphData.layout, { displayModeBar: false });
+                }, 100);
             </script>
+        </div>
+        {% else %}
+        <h2>Your Contribution Calendar</h2>
+        <div id="user-calendar">
+            <h3 class="mt-2 d-flex justify-content-center"><a href="{% url 'account_signup' %}" style="color: green;margin-right:5px;">Sign up</a> to save your contribution progress</h3>
         </div>
         {% endif %}
 

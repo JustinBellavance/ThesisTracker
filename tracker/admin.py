@@ -10,12 +10,10 @@ class CustomUserAdmin(admin.ModelAdmin):
     model = CustomUser
     list_display = ('email', 'username', 'university')
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('username', 'university')}),
+        (None, {'fields': ('email',)}),  # Removed 'password' from here
+        ('Personal info', {'fields': ('username', 'university', 'thesis_title')}),
     )
     add_fieldsets = (
-        (None, {'fields': ('email', 'username', 'university', 'password1', 'password2',)}),
+        (None, {'fields': ('email', 'username', 'university', 'thesis_title', 'password1', 'password2')}),
     )
-    
-
-    
+    readonly_fields = ('password',)  # Prevent password from being changed manually

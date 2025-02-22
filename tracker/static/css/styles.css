@@ -15,8 +15,7 @@ body {
     background-image: linear-gradient(180deg, #f0f4f8, #ffffff 100px, #ffffff);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    overflow-y: auto; /* Allow full-page scrolling */
+    overflow-y: auto;
 }
 
 body, .container {
@@ -26,6 +25,10 @@ body, .container {
 
 header {
     width: 100%;
+}
+
+.centered {
+    align-items:center;
 }
 
 /* Title styling */
@@ -44,6 +47,10 @@ h2 {
     font-size: 2.5em !important;
 }
 
+h3 {
+    text-align: center;
+}
+
 p {
     font-size: 1.2em !important;
 }
@@ -56,10 +63,19 @@ form {
     width: 100%;
 }
 
+.col-form-label {
+    text-align: left !important;
+}
+
+/* Required field asterisk */
+.required-asterisk {
+    color: #e74c3c; /* Red to stand out, matches your .error color */
+    font-weight: bold;
+    margin-left: 2px;
+}
+
 .main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    /* Removed display: flex and align-items: center */
     width: 100%;
 }
 
@@ -142,48 +158,49 @@ hr {
     font-size: 1.25rem; 
     font-weight: 600;    
     color: #333;       
-    margin: 10px 0;    
+    margin: 5px 0;    
 }
 
 /* User logged-in section */
 #user-calendar {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 90%;
+    /* No additional styles needed; inherits from .calendar-item */
+    /* Remove or comment out conflicting rules */
+    /* padding: 20px; */
+    /* width: 90%; */
+    /* text-align: center; */
 }
 
-#chart {
+/* #chart {
     aspect-ratio: 7.6;
-}
+} */
 
 /* Calendar container section */
 #calendar-container {
-    display: block;
-    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 
 /* Individual calendar item */
-.calendar-item {
+.calendar-item, #user-calendar {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin: 15px 0;
-    text-align: center;
     padding: 20px;
+    text-align: center; /* Consistent alignment */
+    width: 90%; /* Match #user-calendar */
+}
+
+.chart-container {
+    width: 100%;
 }
 
 .js-plotly-plot {
+    width: 100%;
     aspect-ratio: 7.6;
-}
-
-.calendar-item h3 {
-    font-size: 1.25rem;   
-    font-weight: 600;     
-    color: #333;        
-    margin: 10px 0;      
 }
 
 #calendars {
@@ -228,6 +245,22 @@ hr {
     border-color: #042a1c !important;
 }
 
+.warning-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+
 /* General form floating styles */
 .form-floating {
     position: relative;
@@ -254,6 +287,8 @@ hr {
 
 .form-floating label {
     position: absolute;
+    display: flex;
+    align-items: center;
     top: 50%;
     left: 1rem;
     transform: translateY(-50%);

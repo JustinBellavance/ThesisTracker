@@ -4,7 +4,10 @@ from django.core.files.storage import default_storage
 from datetime import datetime, timedelta
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm  # Or your custom form
 from django.core.serializers.json import DjangoJSONEncoder
+from django.contrib import messages
+
 
 from .forms import CustomSignupForm
 import plotly.graph_objs as go
@@ -30,11 +33,12 @@ def upload_docx(request):
 
         try:
             doc = Document(temp_file_path)
-            word_count = sum(len(paragraph.text.split()) for paragraph in doc.paragraphs)
-
+            word_count = sum(len(run.text.split()) for paragraph in doc.paragraphs for run in paragraph.runs)
+            
             previous_thesis = Thesis.objects.order_by('-upload_date').first()
 
             word_diff = word_count - previous_thesis.total_words if previous_thesis else word_count
+            
 
             Thesis.objects.create(
                 username=request.user.username,
@@ -42,7 +46,7 @@ def upload_docx(request):
                 word_change=word_diff,
             )
 
-            message = f"File uploaded successfully! Word count: {word_count}. Difference: {word_diff} words."
+            message = f"File uploaded successfully! Current word count: {word_count}. Difference from last upload: {word_diff} words."
 
             return JsonResponse({"message": message})
 
@@ -113,11 +117,14 @@ def load_contribution_calendars(request):
 
         calendars.append({
             "username": user,
-            "university": CustomUser.objects.filter(username=user).values_list("university", flat=True).first() or "Unknown",
+            "university": CustomUser.objects.filter(username=user).values_list("university", flat=True).first() or "Unknown University",
+            "thesis_title" : CustomUser.objects.filter(username=user).values_list("thesis_title", flat=True).first() or "Unknown Thesis Title",
             "graph": json.dumps(fig.to_dict(), cls=DjangoJSONEncoder)
         })
 
     return JsonResponse({"calendars": calendars})
+
+
 
 
 def generate_heatmap_data(username):
@@ -128,8 +135,8 @@ def generate_heatmap_data(username):
         
     while start_date.weekday() != 6:  # 6 is Sunday
         start_date -= timedelta(days=1)
-
-    date_list = [start_date + timedelta(days=i) for i in range(366)]
+        
+    date_list = [start_date + timedelta(days=i) for i in range(365 + (start_date.weekday() - (5 - today.weekday()) ))]
     
     word_counts_by_date = {
         thesis.upload_date.date(): thesis.word_change 
@@ -153,11 +160,12 @@ def generate_heatmap_data(username):
 
         heatmap_data[day_of_week][week_num] = word_count
         tooltip_text[day_of_week][week_num] = f"{date.strftime('%b %d %Y')}: {word_count} words"
-
-    # make first column aligned with rest
+    
     last_column = [heatmap_data[row][week_num] for row in range(7)]
+        
     missing_days = sum(1 for v in last_column if v is not None)
-
+    
+    # make first column aligned with rest
     for i in range(missing_days):
         heatmap_data[i][0] = None  # Fill first N spots in first column with None
         tooltip_text[i][0] = None
@@ -197,32 +205,59 @@ def index(request):
     fig.update_layout(
         xaxis={"visible": False, "showticklabels": False},  
         yaxis={"autorange": "reversed", "scaleanchor": "x"}, 
-        margin={'t': 0, 'b': 0, 'l': 0, 'r': 0},
+        margin={'t': 0, 'b': 0, 'l': 10, 'r': 0},
         paper_bgcolor="white", 
-        plot_bgcolor="white",  
+        plot_bgcolor="white",    
         dragmode=False,
     )
 
     fig.update_traces(showscale=False)
-
+    
+    user = request.user
+    missing_info = not user.thesis_title or not user.university
+    
     context = {
         "graph": json.dumps(fig.to_dict(), cls=DjangoJSONEncoder),
         "config": json.dumps({"displayModeBar": False}, cls=DjangoJSONEncoder),
+        "has_missing_info": missing_info
     }
+    
+
 
     return render(request, "index.html", context)
 
-def login(request):
-    return render(request, "account/login.html")
 
-# def signup(request):
-#     return render(request, "account/signup.html")
+def login(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(data=request.POST)
+        if form.is_valid():
+            # Custom login logic here
+            from django.contrib.auth import authenticate, login
+            user = authenticate(request, username=form.cleaned_data['login'], password=form.cleaned_data['password'])
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+    else:
+        form = CustomLoginForm()
+    return render(request, "account/login.html", {'form': form})
 
 @login_required
 def profile(request):
     user = request.user  # Get the logged-in user (CustomUser instance)
+    
+    if request.method == "POST":
+        user = request.user
+        user.username = request.POST.get("username", user.username)
+        user.email = request.POST.get("email", user.email)
+        user.university = request.POST.get("university", user.university)
+        user.thesis_title = request.POST.get("thesis_title", user.thesis_title)
+        user.save()
+        messages.success(request, "Profile updated successfully.")
+        return redirect("profile")  # Redirect to avoid form resubmission
+    
+    missing_info = not user.thesis_title or not user.university
 
-    return render(request, "profile.html", {"user": user})  # Pass user data to the template
+    return render(request, "profile.html", {"user": user, "has_missing_info" : missing_info})  # Pass user data to the template
 
 def signup_view(request):
     if request.method == "POST":

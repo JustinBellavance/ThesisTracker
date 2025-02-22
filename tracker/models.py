@@ -13,5 +13,6 @@ class Thesis(models.Model):
     
 class CustomUser(AbstractUser):
     university = models.CharField(max_length=100, null=True, blank=True)
+    thesis_title = models.CharField(max_length=250, null=True, blank=True)
     def __str__(self):  
-        return f"{self.username} ({self.email}), @ {self.university}"
+        return f"{self.username} ({self.email}), @ {self.university}, thesis title {self.thesis_title}"
