@@ -128,10 +128,10 @@ def load_contribution_calendars(request):
 
 
 def generate_heatmap_data(username):
-    today = datetime.now().date()
+    today = datetime.now().date() + timedelta(days=2)
         
     # Align start_date to the most recent Sunday
-    start_date = today - timedelta(days=365)
+    start_date = today - timedelta(days=358)
         
     while start_date.weekday() != 6:  # 6 is Sunday
         start_date -= timedelta(days=1)
@@ -145,10 +145,13 @@ def generate_heatmap_data(username):
 
     heatmap_data = [[None] * 53 for _ in range(7)]
     tooltip_text = [[""] * 53 for _ in range(7)]
+    
 
     for date in date_list:
 
         week_num = ((date - start_date).days) // 7
+        print(f"{start_date=}, {today=}, {week_num=}, {(date-start_date).days=}")
+
         day_of_week = date.weekday()
         
         # sunday first
@@ -167,7 +170,7 @@ def generate_heatmap_data(username):
     
     # make first column aligned with rest
     for i in range(missing_days):
-        heatmap_data[i][0] = None  # Fill first N spots in first column with None
+        heatmap_data[i][0] = None 
         tooltip_text[i][0] = None
 
     return heatmap_data, date_list, tooltip_text
