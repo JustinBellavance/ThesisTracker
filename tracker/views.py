@@ -7,14 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm  # Or your custom form
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
-
+from pylatexenc.latex2text import LatexNodes2Text
 
 from .forms import CustomSignupForm
 import plotly.graph_objs as go
 from docx import Document
 import json
-
-
+import time
 import os
 
 from .models import Thesis, CustomUser
@@ -25,39 +24,51 @@ from django.http import JsonResponse
 def upload_docx(request):
     if request.method == "POST" and request.FILES.get("docx_file"):
         uploaded_file = request.FILES["docx_file"]
-
-        if not uploaded_file.name.endswith(".docx"):
-            return JsonResponse({"error": "Invalid file type. Please upload a .docx file."}, status=400)
-
+        file_name = uploaded_file.name.lower()
+        
+        if not (file_name.endswith(".docx") or file_name.endswith(".tex")):
+            return JsonResponse({"error": "Invalid file type. Please upload a .docx or .tex file."}, status=400)
+        
         temp_file_path = default_storage.save(uploaded_file.name, uploaded_file)
-
+        
         try:
-            doc = Document(temp_file_path)
-            word_count = sum(len(run.text.split()) for paragraph in doc.paragraphs for run in paragraph.runs)
+            if file_name.endswith(".docx"):
+                doc = Document(temp_file_path)
+                word_count = sum(len(run.text.split()) for paragraph in doc.paragraphs for run in paragraph.runs)
+            else:  # Process .tex files
+                with open(temp_file_path, "r", encoding="utf-8") as file:
+                    latex_content = file.read()
+                text = LatexNodes2Text().latex_to_text(latex_content)
+                word_count = len(text.split())
             
             previous_thesis = Thesis.objects.order_by('-upload_date').first()
-
             word_diff = word_count - previous_thesis.total_words if previous_thesis else word_count
             
-
-            Thesis.objects.create(
-                username=request.user.username,
-                total_words=word_count,
-                word_change=word_diff,
-            )
-
+            if previous_thesis and previous_thesis.upload_date.date() == datetime.now().date():
+                Thesis.objects.create(
+                    username=request.user.username,
+                    total_words=word_count,
+                    word_change=previous_thesis.word_change + word_diff,
+                )
+            else:
+                Thesis.objects.create(
+                    username=request.user.username,
+                    total_words=word_count,
+                    word_change=word_diff,
+                )
+            
             message = f"File uploaded successfully! Current word count: {word_count}. Difference from last upload: {word_diff} words."
-
             return JsonResponse({"message": message})
-
+        
         except Exception as e:
             return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
-
+        
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
-
+    
     return JsonResponse({"error": "No file uploaded."}, status=400)
+
 
 
 def load_contribution_calendars(request):
@@ -84,6 +95,9 @@ def load_contribution_calendars(request):
 
         week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
         day_labels = ["Sun  ", "Mon  ", "Tue  ", "Wed  ", "Thu  ", "Fri  ", "Sat  "]
+        
+        if (date_list[-1].isoweekday() == 7):
+            week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(54)]
 
         fig = go.Figure(
             data=go.Heatmap(
@@ -128,16 +142,19 @@ def load_contribution_calendars(request):
 
 
 def generate_heatmap_data(username):
-    today = datetime.now().date() + timedelta(days=2)
+    today = datetime.now().date()
+    
         
     # Align start_date to the most recent Sunday
-    start_date = today - timedelta(days=358)
+    start_date = today - timedelta(days=365)
         
     while start_date.weekday() != 6:  # 6 is Sunday
         start_date -= timedelta(days=1)
+            
+    day_padding = today.isoweekday()
         
-    date_list = [start_date + timedelta(days=i) for i in range(365 + (start_date.weekday() - (5 - today.weekday()) ))]
-    
+    date_list = [start_date + timedelta(days=i) for i in range(365 + day_padding)]
+        
     word_counts_by_date = {
         thesis.upload_date.date(): thesis.word_change 
         for thesis in Thesis.objects.filter(username=username)
@@ -146,11 +163,14 @@ def generate_heatmap_data(username):
     heatmap_data = [[None] * 53 for _ in range(7)]
     tooltip_text = [[""] * 53 for _ in range(7)]
     
+    if today.weekday() == 6:
+        heatmap_data = [[None] * 54 for _ in range(7)]
+        tooltip_text = [[""] * 54 for _ in range(7)]
+    
 
     for date in date_list:
 
         week_num = ((date - start_date).days) // 7
-        print(f"{start_date=}, {today=}, {week_num=}, {(date-start_date).days=}")
 
         day_of_week = date.weekday()
         
@@ -184,6 +204,10 @@ def index(request):
     heatmap_data, date_list, tooltip_text = generate_heatmap_data(username)
 
     week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(53)]
+    
+    if (date_list[-1].isoweekday() == 7):
+        week_labels = [(date_list[i * 7].strftime("%b %d")) for i in range(54)]
+
     day_labels = ["Sun  ", "Mon  ", "Tue  ", "Wed  ", "Thu  ", "Fri  ", "Sat  "]
 
     fig = go.Figure(

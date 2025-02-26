@@ -13,7 +13,7 @@
 
             <form id="uploadForm" class="d-flex align-items-center justify-content-center flex-row gap-2" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="file" name="docx_file" accept=".docx" required>
+                <input type="file" name="docx_file" accept=".docx,.tex" required>
                 <button id="uploadButton" data-upload-url="{% url 'upload_docx' %}" data-bs-toggle="modal" data-bs-target="#exampleModal">Upload</button>
             </form>
         </div>
@@ -23,6 +23,7 @@
                 <div class="modal-content">
                     <div class="modal-body"></div>
                     <div class="modal-footer">
+                        <div id="loadingSpinner" class="spinner-border text-success" role="status" style="display: none; width: 20px; height: 20px;"></div>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>

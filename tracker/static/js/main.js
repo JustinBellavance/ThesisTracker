@@ -37,29 +37,56 @@ $(document).ready(function() {
         }
     });
 
+    const fileInput = $("input[name='docx_file']");
+    const uploadButton = $("#uploadButton");
+
+    // Disable the button by default
+    uploadButton.prop("disabled", true);
+
+    // Enable the button when a file is selected
+    fileInput.on("change", function () {
+        if (fileInput[0].files.length > 0) {
+            uploadButton.prop("disabled", false);
+        } else {
+            uploadButton.prop("disabled", true);
+        }
+    });
+
     $("#uploadForm").submit(function (event) {
         event.preventDefault();
-    
+
         var formData = new FormData(this);
         var uploadUrl = $("#uploadButton").data("upload-url");
-    
+
+        // Show the loading spinner when upload starts
+        $("#loadingSpinner").show();
+        uploadButton.prop("disabled", true);
+
         $.ajax({
             url: uploadUrl,
             method: "POST",
             data: formData,
             processData: false,
             contentType: false,
-            success: function(data) {
+            success: function (data) {
                 $(".modal-body").text(data.message);
                 $('#exampleModal').modal('show');
-    
+
+                // Hide the spinner and re-enable the button after the upload completes
+                $("#loadingSpinner").hide();
+                uploadButton.prop("disabled", false);
+
                 // Refresh the page after the modal is closed
                 $('#exampleModal').on('hidden.bs.modal', function () {
                     location.reload();
                 });
             },
-            error: function() {
+            error: function () {
                 $(".modal-body").text("An error occurred. Please try again.");
+
+                // Hide the spinner and re-enable the button in case of error
+                $("#loadingSpinner").hide();
+                uploadButton.prop("disabled", false);
             }
         });
     });
